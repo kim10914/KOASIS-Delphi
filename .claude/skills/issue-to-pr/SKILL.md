@@ -22,8 +22,8 @@ description: Mind Mirror 저장소에서 기능 작업을 이슈 생성부터 �
 
 ## 3. 커밋
 
-- `깃모지 Type: 내용` 형식으로 작성합니다. 예: `✨ Feat: 정보 입력 화면 구현`.
-- 타입: `✨ Feat`, `🐛 Fix`, `♻️ Refactor`, `💄 Style`, `📝 Docs`, `🎉 Chore`.
+- 이모지 없이 `Type: 내용` 형식으로 작성합니다. 콜론 앞에는 공백을 두지 않습니다. 예: `Feat: 정보 입력 화면 구현`.
+- 타입: `Feat`, `Fix`, `Refactor`, `Style`, `Docs`, `Chore`.
 - 커밋 전에 `npm run lint`, `npm run format:check`, `npm run build`를 실행하고 모두 통과해야 합니다.
 - `.env*`, 개인 설정 파일은 커밋하지 않습니다. `.env.example`만 커밋합니다.
 
@@ -41,7 +41,7 @@ description: Mind Mirror 저장소에서 기능 작업을 이슈 생성부터 �
 
 - [ ] 이슈에 라벨과 담당자가 있는가?
 - [ ] 브랜치 이름에 이슈 번호가 있는가?
-- [ ] 커밋 메시지에 깃모지와 타입이 있는가?
+- [ ] 커밋 메시지에 이모지가 없고 타입이 있는가?
 - [ ] 새 컴포넌트가 공용(`src/components`)과 페이지 전용(`src/views/[page]/components`) 중 올바른 위치에 있는가?
 - [ ] 이슈 범위 밖의 공통 파일을 수정했다면 PR에 이유를 적었는가?
 - [ ] PR에 라벨, 담당자, 리뷰어가 지정됐는가?

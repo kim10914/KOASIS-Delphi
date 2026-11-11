@@ -45,8 +45,8 @@ docs/             SPEC, 디자인 토큰, 시안에서 추출한 임시 에셋
 ## 협업 워크플로우
 
 1. 작업 전 이슈 생성 (Tag, Assignees 필수). 이슈 단위로 브랜치 생성
-2. 커밋 메시지: `깃모지 Type: 내용` (예: `✨ Feat: 정보 입력 화면 구현`)
-   - 타입: `✨ Feat`, `🐛 Fix`, `♻️ Refactor`, `💄 Style`, `📝 Docs`, `🎉 Chore`
+2. 커밋 메시지: `Type: 내용` 형식, 이모지는 쓰지 않는다 (예: `Feat: 정보 입력 화면 구현`)
+   - 타입: `Feat`, `Fix`, `Refactor`, `Style`, `Docs`, `Chore`
 3. PR: 본문에 작업 설명, UI 변경 시 스크린샷 첨부. Label, Assignees, Reviewer 지정
 4. 최소 1명 Approve 후 머지. 머지 전 Deploy Preview에서 라우팅과 화면 동작 확인
 

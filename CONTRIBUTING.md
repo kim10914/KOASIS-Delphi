@@ -44,13 +44,13 @@ docs/123-update-guide
 
 ## 커밋 메시지
 
-`깃모지 Type: 내용` 형식으로 변경 목적을 간결하게 작성합니다. 타입은 Feat, Fix, Refactor, Style, Docs, Chore 중에서 고릅니다.
+이모지 없이 `Type: 내용` 형식으로 변경 목적을 간결하게 작성합니다. 타입은 Feat, Fix, Refactor, Style, Docs, Chore 중에서 고릅니다.
 
 ```text
-✨ Feat: 정보 입력 화면 구현
-🐛 Fix: 생년월일 검증 오류 수정
-♻️ Refactor: 공통 Input 구조 정리
-📝 Docs: 개발 안내 보완
+Feat: 정보 입력 화면 구현
+Fix: 생년월일 검증 오류 수정
+Refactor: 공통 Input 구조 정리
+Docs: 개발 안내 보완
 ```
 
 ## Pull Request
