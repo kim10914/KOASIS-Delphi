@@ -1,0 +1,12 @@
+/* 모바일 퍼스트 화면 컨테이너 */
+@utility pageContainer {
+  margin-inline: auto;
+  display: flex;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 430px;
+  flex-direction: column;
+  background: var(--color-surface);
+  padding-inline: 20px;
+  padding-bottom: env(safe-area-inset-bottom);
+}

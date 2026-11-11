@@ -1,0 +1,18 @@
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-surface-muted);
+    color: var(--color-text-strong);
+    font-family: var(--font-sans);
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+}
