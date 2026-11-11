@@ -13,7 +13,7 @@ Closes #
 ## 확인 방법
 
 - [ ] `npm run lint`, `npm run format:check`, `npm run build` 통과
-- [ ] Netlify Deploy Preview URL에서 변경된 화면과 주요 경로 확인
+- [ ] Vercel Preview URL에서 변경된 화면과 주요 경로 확인
 - [ ] `AGENTS.md`의 검증 체크리스트 확인 (쌍따옴표, 세미콜론, 컴포넌트 위치, 정적 export 빌드)
 - 직접 확인한 시나리오:
 - 확인하지 못한 것:
