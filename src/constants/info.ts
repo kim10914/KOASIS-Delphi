@@ -7,6 +7,8 @@ export const infoText = {
   // 처리 방식 확정 전까지 익명 저장, 비식별 완료를 보장하지 않는 임시 문구
   privacyNotice:
     "입력해주신 정보는 연구 조사 진행과 통계 활용 목적으로만 사용됩니다.",
+  restoredNotice: "이전에 입력한 정보입니다. 다른 참여자라면 지워주세요.",
+  clearSaved: "입력 지우기",
   submit: "제출하기",
   formLabel: "참여자 정보 입력",
 } as const;
@@ -19,6 +21,7 @@ export const infoFields = {
   birthDate: {
     label: "생년월일",
     placeholder: "8자리를 입력하세요.",
+    helperText: "예: 20100315",
     maxLength: 8,
   },
   gender: {
@@ -70,7 +73,7 @@ export const regionOptions = [
 
 export const infoErrors = {
   nameRequired: "이름을 입력해주세요.",
-  nameInvalid: "이름은 한글 또는 영문 2~20자로 입력해주세요.",
+  nameInvalid: "이름은 2~20자의 문자로 입력해주세요.",
   birthDateRequired: "생년월일을 입력해주세요.",
   birthDateFormat: "생년월일은 숫자 8자리(예: 20100315)로 입력해주세요.",
   birthDateInvalid: "존재하는 날짜를 입력해주세요.",

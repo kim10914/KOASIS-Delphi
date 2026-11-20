@@ -4,7 +4,12 @@ import { useSyncExternalStore } from "react";
 import AppHeader from "@/components/AppHeader";
 import StepIndicator from "@/components/StepIndicator";
 import { infoText } from "@/constants/info";
-import { loadParticipant } from "@/lib/storage/surveySession";
+import {
+  clearParticipant,
+  getParticipantServerSnapshot,
+  loadParticipant,
+  subscribeParticipant,
+} from "@/lib/storage/surveySession";
 import InfoForm from "@/views/info/components/InfoForm";
 import type { Participant } from "@/types/survey";
 
@@ -16,17 +21,15 @@ const emptyParticipant: Participant = {
   region: "",
 };
 
-function subscribe() {
-  return () => {};
-}
-
 export default function InfoScreen() {
-  // 정적 export 하이드레이션 불일치를 피하려고 클라이언트 마운트 후에만 세션 값을 복원한다.
-  const isClient = useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false,
+  // 정적 HTML에서도 폼이 바로 렌더링되도록 서버 스냅샷은 빈 값으로 두고, 마운트 후에만 저장 값을 반영한다.
+  const savedParticipant = useSyncExternalStore(
+    subscribeParticipant,
+    loadParticipant,
+    getParticipantServerSnapshot,
   );
+  const initialValues = savedParticipant ?? emptyParticipant;
+  const formKey = savedParticipant ? "restored" : "empty";
 
   return (
     <main className="pageContainer">
@@ -41,9 +44,19 @@ export default function InfoScreen() {
             {infoText.privacyNotice}
           </p>
         </div>
-        {isClient ? (
-          <InfoForm initialValues={loadParticipant() ?? emptyParticipant} />
+        {savedParticipant ? (
+          <div className="flex items-center justify-between gap-3 rounded-[var(--radius-input)] bg-surface-muted px-4 py-2 text-sm text-text-strong">
+            <span className="break-keep">{infoText.restoredNotice}</span>
+            <button
+              type="button"
+              onClick={clearParticipant}
+              className="min-h-11 shrink-0 px-1 font-semibold text-text-strong underline underline-offset-4"
+            >
+              {infoText.clearSaved}
+            </button>
+          </div>
         ) : null}
+        <InfoForm key={formKey} initialValues={initialValues} />
       </div>
     </main>
   );

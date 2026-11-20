@@ -88,6 +88,7 @@ export default function InfoForm({ initialValues }: InfoFormProps) {
       <Input
         label={infoFields.birthDate.label}
         placeholder={infoFields.birthDate.placeholder}
+        helperText={infoFields.birthDate.helperText}
         inputMode="numeric"
         maxLength={infoFields.birthDate.maxLength}
         autoComplete="off"

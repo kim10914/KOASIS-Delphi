@@ -3,12 +3,17 @@
 import { useEffect, useState } from "react";
 import { splashConfig } from "@/config/survey";
 import { splashSteps, splashText, type SplashStep } from "@/constants/splash";
+import { clearParticipant } from "@/lib/storage/surveySession";
 import SplashBackground from "./SplashBackground";
 import SplashBrand from "./SplashBrand";
 import SplashIntro from "./SplashIntro";
 
 export default function SplashScreen() {
   const [step, setStep] = useState<SplashStep>(splashSteps.logo);
+
+  useEffect(() => {
+    clearParticipant();
+  }, []);
 
   useEffect(() => {
     if (step === splashSteps.intro) {
