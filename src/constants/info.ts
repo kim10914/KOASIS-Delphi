@@ -39,7 +39,6 @@ export const infoFields = {
 } as const;
 
 export const infoRules = {
-  nameMin: 2,
   nameMax: 20,
   jobMax: 50,
   minBirthYear: 1900,
@@ -49,7 +48,7 @@ export const genderOptions = [
   { value: "남성", label: "남성" },
   { value: "여성", label: "여성" },
   { value: "응답하지 않음", label: "응답하지 않음" },
-];
+] as const;
 
 export const regionOptions = [
   "서울특별시",
@@ -73,13 +72,13 @@ export const regionOptions = [
 
 export const infoErrors = {
   nameRequired: "이름을 입력해주세요.",
-  nameInvalid: "이름은 2~20자의 문자로 입력해주세요.",
+  nameTooLong: `이름은 ${infoRules.nameMax}자 이하로 입력해주세요.`,
   birthDateRequired: "생년월일을 입력해주세요.",
   birthDateFormat: "생년월일은 숫자 8자리(예: 20100315)로 입력해주세요.",
   birthDateInvalid: "존재하는 날짜를 입력해주세요.",
   birthDateRange: "1900년 이후 오늘까지의 날짜를 입력해주세요.",
   genderRequired: "성별을 선택해주세요.",
   jobRequired: "직업을 입력해주세요.",
-  jobTooLong: "직업은 50자 이하로 입력해주세요.",
+  jobTooLong: `직업은 ${infoRules.jobMax}자 이하로 입력해주세요.`,
   regionRequired: "지역을 선택해주세요.",
 } as const;

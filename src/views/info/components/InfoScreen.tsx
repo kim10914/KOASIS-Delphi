@@ -32,7 +32,7 @@ export default function InfoScreen() {
   const formKey = savedParticipant ? "restored" : "empty";
 
   return (
-    <main className="pageContainer">
+    <main className="pageContainer pt-[env(safe-area-inset-top)]">
       <AppHeader />
       <div className="mt-4 flex flex-col gap-6">
         <StepIndicator currentStep={1} />

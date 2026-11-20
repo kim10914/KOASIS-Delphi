@@ -7,7 +7,6 @@ import {
 import type { InfoFieldName } from "@/constants/info";
 import type { Participant } from "@/types/survey";
 
-const namePattern = /^[\p{L}\p{M}'\-.· ]+$/u;
 const birthDatePattern = /^\d{8}$/;
 
 function isAllowedOption(
@@ -22,10 +21,8 @@ function validateName(value: string) {
   if (!name) {
     return infoErrors.nameRequired;
   }
-  const isValidLength =
-    name.length >= infoRules.nameMin && name.length <= infoRules.nameMax;
-  if (!isValidLength || !namePattern.test(name)) {
-    return infoErrors.nameInvalid;
+  if (name.length > infoRules.nameMax) {
+    return infoErrors.nameTooLong;
   }
   return "";
 }

@@ -9,6 +9,7 @@ import Select from "@/components/Select";
 import {
   genderOptions,
   infoFields,
+  infoRules,
   infoText,
   regionOptions,
 } from "@/constants/info";
@@ -83,6 +84,7 @@ export default function InfoForm({ initialValues }: InfoFormProps) {
         label={infoFields.name.label}
         placeholder={infoFields.name.placeholder}
         autoComplete="off"
+        maxLength={infoRules.nameMax}
         {...fieldProps("name")}
       />
       <Input
@@ -104,6 +106,7 @@ export default function InfoForm({ initialValues }: InfoFormProps) {
         label={infoFields.job.label}
         placeholder={infoFields.job.placeholder}
         autoComplete="off"
+        maxLength={infoRules.jobMax}
         {...fieldProps("job")}
       />
       <Select
