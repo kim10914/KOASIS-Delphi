@@ -9,6 +9,7 @@
   --color-surface-muted: #f0f0f5;
   --color-border: #e4e4ea;
   --color-disabled: #d9d9dc;
+  --color-error: #e5484d;
 
   /* 감정 사분면 */
   --color-quadrant-high-negative: #ff8a3a;
@@ -29,5 +30,6 @@
   --color-surface-muted: var(--color-surface-muted);
   --color-border: var(--color-border);
   --color-disabled: var(--color-disabled);
+  --color-error: var(--color-error);
   --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
 }
