@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { splashConfig } from "@/config/survey";
 import { splashSteps, splashText, type SplashStep } from "@/constants/splash";
-import { clearParticipant } from "@/lib/storage/surveySession";
+import {
+  clearFaceConsent,
+  clearParticipant,
+} from "@/lib/storage/surveySession";
 import SplashBackground from "./SplashBackground";
 import SplashBrand from "./SplashBrand";
 import SplashIntro from "./SplashIntro";
@@ -13,6 +16,7 @@ export default function SplashScreen() {
 
   useEffect(() => {
     clearParticipant();
+    clearFaceConsent();
   }, []);
 
   useEffect(() => {

@@ -3,6 +3,8 @@ import type { Participant } from "@/types/survey";
 
 const participantKey = "mindMirror.participant";
 
+const faceConsentKey = "mindMirror.faceConsent";
+
 const participantFields: (keyof Participant)[] = [
   "name",
   "birthDate",
@@ -109,5 +111,43 @@ export function loadParticipant(): Participant | null {
     cachedRaw = null;
     cachedParticipant = null;
     return null;
+  }
+}
+
+export function saveFaceConsent(faceConsent: boolean): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    window.sessionStorage.setItem(faceConsentKey, JSON.stringify(faceConsent));
+  } catch {
+    // 저장소를 쓸 수 없는 환경에서는 저장을 건너뛴다.
+  }
+}
+
+export function loadFaceConsent(): boolean | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  try {
+    const raw = window.sessionStorage.getItem(faceConsentKey);
+    if (raw === null) {
+      return null;
+    }
+    const parsed: unknown = JSON.parse(raw);
+    return typeof parsed === "boolean" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearFaceConsent(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    window.sessionStorage.removeItem(faceConsentKey);
+  } catch {
+    // 저장소를 쓸 수 없는 환경에서는 삭제를 건너뛴다.
   }
 }
