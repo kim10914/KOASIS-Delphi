@@ -1,7 +1,9 @@
+import { brandAssets } from "./assets";
+
 export const appHeaderText = {
-  logoSrc: "/images/logo.png",
+  logoSrc: brandAssets.logoPath,
   wordmark: "Mind Mirror",
-  logoAlt: "Mind Mirror 로고",
+  logoAlt: brandAssets.logoAlt,
   menuLabel: "메뉴 (준비 중)",
 } as const;
 

@@ -8,6 +8,11 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 
+const buttonBaseClassName =
+  "flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] text-base font-semibold";
+
+export const primaryButtonClassName = `${buttonBaseClassName} bg-primary text-white`;
+
 const variantClassName: Record<ButtonVariant, string> = {
   primary: "bg-primary text-white disabled:bg-disabled disabled:text-white",
   secondary:
@@ -30,7 +35,7 @@ export default function Button({
   return (
     <button
       type={type}
-      className={`flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] text-base font-semibold ${variantClassName[variant]} ${className}`}
+      className={`${buttonBaseClassName} ${variantClassName[variant]} ${className}`}
       disabled={disabled || loading}
       aria-busy={loading}
       {...props}
