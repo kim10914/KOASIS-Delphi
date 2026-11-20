@@ -9,6 +9,10 @@
   --color-surface-muted: #f0f0f5;
   --color-border: #e4e4ea;
   --color-disabled: #d9d9dc;
+  --color-splash-bg: #000000;
+  --color-splash-glow-blue: rgb(0 90 130 / 0.75);
+  --color-splash-glow-purple: rgb(60 10 130 / 0.7);
+  --color-splash-glow-navy: rgb(10 20 90 / 0.5);
 
   /* 감정 사분면 */
   --color-quadrant-high-negative: #ff8a3a;
@@ -29,5 +33,6 @@
   --color-surface-muted: var(--color-surface-muted);
   --color-border: var(--color-border);
   --color-disabled: var(--color-disabled);
+  --color-splash-bg: var(--color-splash-bg);
   --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
 }
