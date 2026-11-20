@@ -10,6 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 Mind Mirror(K-OASIS 이미지 기반 심리테스트) 참여자용 모바일 웹앱(PWA).
 상세 요구사항은 `docs/SPEC.md`, 디자인 토큰은 `docs/design-tokens.md`를 먼저 읽는다.
+`docs/mockups/`에 화면 시안 18장이 있으며, UI 작업 전 `docs/SPEC.md`의 화면 흐름 표에 매핑된 시안 이미지를 먼저 확인해야 한다.
 
 ## 스택과 제약
 
@@ -38,7 +39,20 @@ src/constants/    상수 (routes.ts, 감정 격자 데이터 등)
 src/styles/       fonts.css, theme.css(CSS 변수 토큰), base.css(@layer base), utilities.css
 src/types/        타입
 docs/             SPEC, 디자인 토큰, 시안에서 추출한 임시 에셋
+docs/mockups/     화면 시안 18장 (UI 작업 전 해당 화면 시안을 직접 확인)
 ```
+
+`docs/mockups/` 시안 파일 요약 및 참조 규칙:
+- `0. 로딩 화면.png`, `0. 로딩 화면 2.png`, `1. 시작 화면.png`: 스플래시 (`/`)
+- `2. 개인정보 입력.png`: 정보 입력 (`/info`, 1단계)
+- `3. 화면 공유 메시지.png`: 카메라 동의 (`/consent`, 2단계)
+- `4. 테스트 전 무드미터.png`: 사전 무드미터 (`/mood/pre`, 3단계)
+- `5. 테스트 시작.png`: 준비 안내 (`/ready`)
+- `6. 본 조사_K-OASIS 이미지 선택_v1.png`, `v2_1.png`~`v2_3.png`: 본 조사 (`/test`)
+- `7. 본 조사 마무리.png`: 본 조사 완료 (`/done`)
+- `8. 조사 후 무드 미터 v1.png`, `8-1. 조사 후 무드 미터 v2.png`, `8-2. 조사 후 무드 미터 v2.png`: 사후 무드미터 (`/mood/post`)
+- `9. 로딩 화면.png`, `10. 결과 화면.png`: 결과 로딩 (`/loading`), 결과 (`/result`)
+- `아이콘.png`: 앱 아이콘
 
 `src/pages`는 Next.js Pages Router 경로로 인식되므로 사용하지 않는다. 페이지 전용 컴포넌트는 `src/views`에 둔다.
 

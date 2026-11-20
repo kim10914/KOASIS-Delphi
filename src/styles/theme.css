@@ -4,11 +4,12 @@
   --color-primary-gradient-from: #1cff7d;
   --color-primary-gradient-to: #00c9d0;
   --color-text-strong: #111111;
-  --color-text-muted: #7a7a80;
+  --color-text-muted: #767676;
   --color-surface: #ffffff;
   --color-surface-muted: #f0f0f5;
   --color-border: #e4e4ea;
   --color-disabled: #d9d9dc;
+  --color-error: #d93036;
   --color-splash-bg: #000000;
   --color-splash-glow-blue: rgb(0 90 130 / 0.75);
   --color-splash-glow-purple: rgb(60 10 130 / 0.7);
@@ -21,7 +22,9 @@
   --color-quadrant-low-positive: #8f9f5c;
 
   --radius-button: 14px;
+  --radius-input: 12px;
   --radius-card: 24px;
+  --shadow-button: 0 1px 2px rgb(0 0 0 / 0.04);
   --shadow-card: 0 2px 12px rgb(0 0 0 / 0.06);
 }
 
@@ -33,6 +36,7 @@
   --color-surface-muted: var(--color-surface-muted);
   --color-border: var(--color-border);
   --color-disabled: var(--color-disabled);
+  --color-error: var(--color-error);
   --color-splash-bg: var(--color-splash-bg);
   --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
 }
