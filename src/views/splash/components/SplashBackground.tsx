@@ -1,8 +1,14 @@
-export default function SplashBackground() {
+type SplashBackgroundProps = {
+  isIntro: boolean;
+};
+
+export default function SplashBackground({ isIntro }: SplashBackgroundProps) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -z-0"
+      className={`pointer-events-none absolute inset-0 -z-0 transition-all duration-1000 ease-out motion-reduce:transition-none ${
+        isIntro ? "scale-105 opacity-100" : "scale-100 opacity-85"
+      }`}
       style={{
         background: [
           "radial-gradient(70% 40% at 0% 85%, rgb(0 90 130 / 0.75) 0%, transparent 100%)",

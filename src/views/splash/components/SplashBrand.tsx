@@ -19,9 +19,14 @@ export default function SplashBrand({ showSubtitle }: SplashBrandProps) {
       <p className="mt-3 text-[40px] leading-tight font-bold tracking-tight">
         {splashText.brandName}
       </p>
-      {showSubtitle ? (
-        <p className="mt-2 text-base text-white/80">{splashText.subtitle}</p>
-      ) : null}
+      <p
+        aria-hidden={!showSubtitle}
+        className={`mt-2 text-base text-white/80 transition-all duration-500 ease-out motion-reduce:transition-none ${
+          showSubtitle ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
+        }`}
+      >
+        {splashText.subtitle}
+      </p>
     </div>
   );
 }

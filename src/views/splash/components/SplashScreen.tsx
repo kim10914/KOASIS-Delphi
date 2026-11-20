@@ -25,24 +25,37 @@ export default function SplashScreen() {
   }, [step]);
 
   const isIntro = step === splashSteps.intro;
+  const showMeta = step !== splashSteps.logo;
 
   return (
     <main className="pageContainer relative overflow-hidden bg-black! pt-[env(safe-area-inset-top)]">
-      <SplashBackground />
-      <div
-        className={`relative flex flex-1 flex-col items-center ${
-          isIntro ? "justify-start pt-[22dvh]" : "justify-center"
+      <SplashBackground isIntro={isIntro} />
+      <div className="relative flex flex-1 flex-col items-center pt-[clamp(48px,18dvh,160px)]">
+        <div
+          className={`transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            isIntro ? "translate-y-0" : "translate-y-[14dvh]"
+          }`}
+        >
+          <SplashBrand showSubtitle={showMeta} />
+        </div>
+        <div
+          aria-hidden={!isIntro}
+          className={`mt-auto w-full pt-8 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            isIntro
+              ? "translate-y-0 opacity-100 delay-150"
+              : "pointer-events-none translate-y-6 opacity-0"
+          }`}
+        >
+          <SplashIntro isActive={isIntro} />
+        </div>
+      </div>
+      <p
+        aria-hidden={!showMeta}
+        className={`relative py-6 text-center text-sm text-white/70 transition-opacity duration-500 ease-out motion-reduce:transition-none ${
+          showMeta ? "opacity-100" : "opacity-0"
         }`}
       >
-        <SplashBrand showSubtitle={step !== splashSteps.logo} />
-        {isIntro ? (
-          <div className="mt-auto w-full pt-10">
-            <SplashIntro />
-          </div>
-        ) : null}
-      </div>
-      <p className="relative py-6 text-center text-sm text-white/70">
-        {step === splashSteps.logo ? " " : splashText.copyright}
+        {splashText.copyright}
       </p>
     </main>
   );
