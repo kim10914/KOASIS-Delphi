@@ -1,5 +1,6 @@
 import { useId } from "react";
 import type { InputHTMLAttributes } from "react";
+import FormField from "@/components/FormField";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
@@ -13,34 +14,37 @@ export default function Input({
   helperText,
   id,
   className = "",
+  "aria-describedby": ariaDescribedBy,
   ...props
 }: InputProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const messageId = `${inputId}-message`;
-  const message = error ?? helperText;
+  const hasMessage = Boolean(error || helperText);
+  const describedBy =
+    [hasMessage ? messageId : undefined, ariaDescribedBy]
+      .filter(Boolean)
+      .join(" ") || undefined;
+
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={inputId} className="text-sm font-bold text-text-strong">
-        {label}
-      </label>
+    <FormField
+      id={inputId}
+      label={label}
+      messageId={messageId}
+      error={error}
+      helperText={helperText}
+    >
       <input
         id={inputId}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={message ? messageId : undefined}
-        className={`h-14 w-full rounded-xl border bg-surface px-5 text-base text-text-strong outline-none placeholder:text-text-muted/70 focus:border-text-strong disabled:bg-surface-muted ${
-          error ? "border-error" : "border-border"
+        className={`h-14 w-full rounded-[var(--radius-input)] border bg-surface px-5 text-base text-text-strong outline-none placeholder:text-text-muted/70 disabled:bg-surface-muted ${
+          error
+            ? "border-error focus:border-error"
+            : "border-border focus:border-text-strong"
         } ${className}`}
         {...props}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy}
       />
-      {message ? (
-        <p
-          id={messageId}
-          className={`text-sm ${error ? "text-error" : "text-text-muted"}`}
-        >
-          {message}
-        </p>
-      ) : null}
-    </div>
+    </FormField>
   );
 }

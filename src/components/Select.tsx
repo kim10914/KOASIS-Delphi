@@ -1,5 +1,8 @@
-import { useId } from "react";
-import type { SelectHTMLAttributes } from "react";
+"use client";
+
+import { useId, useState } from "react";
+import type { ChangeEvent, SelectHTMLAttributes } from "react";
+import FormField from "@/components/FormField";
 
 type SelectOption = {
   value: string;
@@ -24,30 +27,58 @@ export default function Select({
   className = "",
   value,
   defaultValue,
+  onChange,
+  "aria-describedby": ariaDescribedBy,
   ...props
 }: SelectProps) {
   const generatedId = useId();
   const selectId = id ?? generatedId;
   const messageId = `${selectId}-message`;
-  const message = error ?? helperText;
-  const isEmpty = value !== undefined ? value === "" : !defaultValue;
-  const valueProps =
-    value !== undefined ? { value } : { defaultValue: defaultValue ?? "" };
+  const [hasUncontrolledValue, setHasUncontrolledValue] = useState(
+    Boolean(defaultValue),
+  );
+  const isControlled = value !== undefined;
+  const isEmpty = isControlled ? value === "" : !hasUncontrolledValue;
+  const showPlaceholderColor = Boolean(placeholder) && isEmpty;
+  const hasMessage = Boolean(error || helperText);
+  const describedBy =
+    [hasMessage ? messageId : undefined, ariaDescribedBy]
+      .filter(Boolean)
+      .join(" ") || undefined;
+  const valueProps = isControlled
+    ? { value }
+    : { defaultValue: defaultValue ?? (placeholder ? "" : undefined) };
+
+  function handleChange(event: ChangeEvent<HTMLSelectElement>) {
+    if (!isControlled) {
+      setHasUncontrolledValue(event.target.value !== "");
+    }
+    onChange?.(event);
+  }
+
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={selectId} className="text-sm font-bold text-text-strong">
-        {label}
-      </label>
+    <FormField
+      id={selectId}
+      label={label}
+      messageId={messageId}
+      error={error}
+      helperText={helperText}
+    >
       <div className="relative">
         <select
           id={selectId}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={message ? messageId : undefined}
-          className={`h-14 w-full appearance-none rounded-xl border bg-surface pr-12 pl-5 text-base outline-none focus:border-text-strong disabled:bg-surface-muted ${
-            isEmpty ? "text-text-muted/70" : "text-text-strong"
-          } ${error ? "border-error" : "border-border"} ${className}`}
+          className={`h-14 w-full appearance-none rounded-[var(--radius-input)] border bg-surface pr-12 pl-5 text-base outline-none disabled:bg-surface-muted ${
+            showPlaceholderColor ? "text-text-muted/70" : "text-text-strong"
+          } ${
+            error
+              ? "border-error focus:border-error"
+              : "border-border focus:border-text-strong"
+          } ${className}`}
           {...valueProps}
           {...props}
+          onChange={handleChange}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
         >
           {placeholder ? (
             <option value="" disabled>
@@ -75,14 +106,6 @@ export default function Select({
           <path d="m6 9 6 6 6-6" />
         </svg>
       </div>
-      {message ? (
-        <p
-          id={messageId}
-          className={`text-sm ${error ? "text-error" : "text-text-muted"}`}
-        >
-          {message}
-        </p>
-      ) : null}
-    </div>
+    </FormField>
   );
 }

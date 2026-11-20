@@ -6,11 +6,11 @@ export default function AppHeader() {
     <header className="flex h-14 items-center justify-between">
       <div className="flex items-center gap-2">
         <Image
-          src="/images/logo.png"
+          src={appHeaderText.logoSrc}
           alt={appHeaderText.logoAlt}
-          width={38}
-          height={26}
-          priority
+          width={28}
+          height={19}
+          preload
         />
         <span className="text-xl font-bold text-text-strong">
           {appHeaderText.wordmark}

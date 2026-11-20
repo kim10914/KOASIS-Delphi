@@ -11,9 +11,13 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 const variantClassName: Record<ButtonVariant, string> = {
   primary: "bg-primary text-white disabled:bg-disabled disabled:text-white",
   secondary:
-    "border border-border bg-surface text-text-strong shadow-[0_1px_2px_rgb(0_0_0/0.04)] disabled:text-text-muted",
+    "border border-border bg-surface text-text-strong shadow-[var(--shadow-button)] disabled:border-border disabled:bg-surface-muted disabled:text-text-muted",
 };
 
+/**
+ * 공통 버튼 컴포넌트.
+ * 기본 `type`은 `"button"`이므로 `<form>` 제출 버튼으로 쓸 때는 `type="submit"`을 명시한다.
+ */
 export default function Button({
   variant = "primary",
   loading = false,

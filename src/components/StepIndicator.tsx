@@ -7,7 +7,7 @@ type StepIndicatorProps = {
 
 export default function StepIndicator({
   currentStep,
-  totalSteps = 3,
+  totalSteps = stepIndicatorText.defaultTotalSteps,
 }: StepIndicatorProps) {
   const steps = Array.from({ length: totalSteps }, (_, index) => index + 1);
   return (
@@ -15,20 +15,26 @@ export default function StepIndicator({
       {steps.map((step) => {
         const reached = step <= currentStep;
         return (
-          <li key={step} className="flex items-center">
+          <li
+            key={step}
+            aria-current={step === currentStep ? "step" : undefined}
+            className="flex items-center"
+          >
             {step > 1 ? (
               <span className="mx-1.5 h-px w-5 bg-border" aria-hidden="true" />
             ) : null}
             <span
-              aria-current={step === currentStep ? "step" : undefined}
-              aria-label={stepIndicatorText.stepLabel(step, totalSteps)}
-              className={`flex size-12 items-center justify-center rounded-full border text-base font-semibold ${
+              aria-hidden="true"
+              className={`flex size-8.5 items-center justify-center rounded-full border text-sm font-semibold ${
                 reached
                   ? "border-text-strong bg-text-strong text-white"
                   : "border-border bg-surface text-text-muted"
               }`}
             >
               {step}
+            </span>
+            <span className="sr-only">
+              {stepIndicatorText.stepLabel(step, totalSteps)}
             </span>
           </li>
         );

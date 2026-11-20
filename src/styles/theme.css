@@ -4,12 +4,12 @@
   --color-primary-gradient-from: #1cff7d;
   --color-primary-gradient-to: #00c9d0;
   --color-text-strong: #111111;
-  --color-text-muted: #7a7a80;
+  --color-text-muted: #767676;
   --color-surface: #ffffff;
   --color-surface-muted: #f0f0f5;
   --color-border: #e4e4ea;
   --color-disabled: #d9d9dc;
-  --color-error: #e5484d;
+  --color-error: #d93036;
 
   /* 감정 사분면 */
   --color-quadrant-high-negative: #ff8a3a;
@@ -18,7 +18,9 @@
   --color-quadrant-low-positive: #8f9f5c;
 
   --radius-button: 14px;
+  --radius-input: 12px;
   --radius-card: 24px;
+  --shadow-button: 0 1px 2px rgb(0 0 0 / 0.04);
   --shadow-card: 0 2px 12px rgb(0 0 0 / 0.06);
 }
 

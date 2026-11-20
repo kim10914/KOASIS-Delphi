@@ -22,6 +22,7 @@ Figma 원본이 없어 시안 PNG(563px 폭)에서 색상을 샘플링했다. �
 | surface-muted | `#f2f2f7` (칩, 비활성 배경, 입력 테두리 `#f2f2f5`) |
 | chip-selected | `#222222` |
 | disabled-button | `#d9d9dc` (시안 회색 버튼 근사) |
+| error | `#d93036` (임시값, 시안 확인 필요. WCAG AA 대비 충족) |
 
 ## 감정 격자 (6x6) 색상
 
@@ -47,8 +48,9 @@ Figma 원본이 없어 시안 PNG(563px 폭)에서 색상을 샘플링했다. �
 
 ## 형태
 
-- 버튼 높이 약 56px, 모서리 반경 약 14px, 가로 꽉 참
-- 카드 모서리 반경 약 24px
+- 버튼 높이 약 56px, 모서리 반경 약 14px, 가로 꽉 참 (`--radius-button`, `--shadow-button`)
+- 입력창·셀렉트 모서리 반경 12px (`--radius-input`)
+- 카드 모서리 반경 약 24px (`--radius-card`)
 - 화면 좌우 여백 20px
 - 폰트: Pretendard (한글), 로고 영문은 기하학적 산세리프(Outfit 계열로 추정)
 
