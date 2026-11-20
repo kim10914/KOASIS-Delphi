@@ -1,5 +1,5 @@
 import InfoScreen from "@/views/info/components/InfoScreen";
 
-export default function InfoPage() {
+export default function Page() {
   return <InfoScreen />;
 }

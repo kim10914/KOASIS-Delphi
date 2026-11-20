@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { clearParticipant } from "@/lib/storage/participant";
 import { splashConfig } from "@/config/survey";
 import { splashSteps, splashText, type SplashStep } from "@/constants/splash";
+import { clearParticipant } from "@/lib/storage/surveySession";
 import SplashBackground from "./SplashBackground";
 import SplashBrand from "./SplashBrand";
 import SplashIntro from "./SplashIntro";
@@ -12,7 +12,6 @@ export default function SplashScreen() {
   const [step, setStep] = useState<SplashStep>(splashSteps.logo);
 
   useEffect(() => {
-    // 공용 기기에서 이전 참여자의 정보가 남지 않도록 시작 화면에서 지운다.
     clearParticipant();
   }, []);
 
