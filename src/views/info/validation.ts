@@ -1,7 +1,11 @@
 import {
   birthDateLength,
   birthDateMinYear,
+  genderOptions,
   infoErrors,
+  jobMaxLength,
+  nameMaxLength,
+  regionOptions,
 } from "@/constants/info";
 import type { Participant } from "@/types/survey";
 
@@ -20,7 +24,12 @@ export function validateBirthDate(
   const year = Number(value.slice(0, 4));
   const month = Number(value.slice(4, 6));
   const day = Number(value.slice(6, 8));
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return infoErrors.birthDateInvalid;
+  }
   const date = new Date(year, month - 1, day);
+  // Date 생성자는 0~99년을 1900년대로 해석하므로 연도를 직접 지정한다.
+  date.setFullYear(year);
   const isRealDate =
     date.getFullYear() === year &&
     date.getMonth() === month - 1 &&
@@ -46,10 +55,31 @@ export function validateField(
   field: keyof Participant,
   value: string,
 ): string | undefined {
-  if (field === "birthDate") {
-    return validateBirthDate(value);
+  const trimmed = value.trim();
+  switch (field) {
+    case "birthDate":
+      return validateBirthDate(value);
+    case "name":
+      if (trimmed === "") {
+        return infoErrors.name;
+      }
+      return trimmed.length > nameMaxLength
+        ? infoErrors.nameTooLong
+        : undefined;
+    case "job":
+      if (trimmed === "") {
+        return infoErrors.job;
+      }
+      return trimmed.length > jobMaxLength ? infoErrors.jobTooLong : undefined;
+    case "gender":
+      return genderOptions.some((option) => option.value === value)
+        ? undefined
+        : infoErrors.gender;
+    case "region":
+      return regionOptions.some((option) => option.value === value)
+        ? undefined
+        : infoErrors.region;
   }
-  return value.trim() === "" ? infoErrors[field] : undefined;
 }
 
 export function validateParticipant(values: Participant): ParticipantErrors {

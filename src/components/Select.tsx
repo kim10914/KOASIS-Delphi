@@ -11,7 +11,7 @@ type SelectOption = {
 
 type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "children"> & {
   label: string;
-  options: SelectOption[];
+  options: readonly SelectOption[];
   placeholder?: string;
   error?: string;
   helperText?: string;
