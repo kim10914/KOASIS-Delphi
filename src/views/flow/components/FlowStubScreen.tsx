@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Button from "@/components/Button";
-import { flowText, stubMood, stubScale, stubScreens } from "@/constants/flow";
+import { flowText, stubScale, stubScreens } from "@/constants/flow";
 import type { StubStage } from "@/constants/flow";
 import { routes } from "@/constants/routes";
 import {
@@ -11,7 +11,6 @@ import {
   getSessionServerSnapshot,
   loadResult,
   loadSession,
-  saveMood,
   startTest,
   submitImageResponse,
   subscribeResult,
@@ -20,7 +19,6 @@ import {
 import { createImageOrder } from "@/lib/survey/imageOrder";
 import { submitSurvey } from "@/lib/survey/submitSurvey";
 import { useImageTimer } from "@/lib/survey/useImageTimer";
-import type { MoodPhase } from "@/types/survey";
 
 type FlowStubScreenProps = {
   stage: StubStage;
@@ -34,12 +32,8 @@ function useSession() {
   );
 }
 
-function recordStubMood(phase: MoodPhase) {
-  saveMood(phase, { ...stubMood, checkedAt: new Date().toISOString() });
-}
-
 /**
- * 감정 격자, 본조사, 결과지 화면이 구현되기 전까지 단계 이동과 세션 연결을 확인하기 위한 임시 화면.
+ * 본조사, 결과지 화면이 구현되기 전까지 단계 이동과 세션 연결을 확인하기 위한 임시 화면.
  * 각 화면을 구현할 때 이 파일의 해당 단계를 실제 화면으로 교체한다.
  */
 export default function FlowStubScreen({ stage }: FlowStubScreenProps) {
@@ -96,10 +90,6 @@ export default function FlowStubScreen({ stage }: FlowStubScreenProps) {
 
   function handleNext() {
     switch (stage) {
-      case "moodPre":
-        recordStubMood("pre");
-        router.push(routes.ready);
-        return;
       case "ready":
         startTest(createImageOrder());
         router.push(routes.test);
@@ -120,10 +110,6 @@ export default function FlowStubScreen({ stage }: FlowStubScreenProps) {
       }
       case "done":
         router.push(routes.moodPost);
-        return;
-      case "moodPost":
-        recordStubMood("post");
-        router.push(routes.loading);
         return;
       case "result":
         router.replace(routes.splash);
