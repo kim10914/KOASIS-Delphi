@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import AppHeader from "@/components/AppHeader";
+import { getImageSrc } from "@/constants/images";
 import { routes } from "@/constants/routes";
 import {
   getSessionServerSnapshot,
@@ -24,8 +25,16 @@ export default function TestScreen() {
   const order = session?.imageOrder ?? [];
   const index = session?.responses.length ?? 0;
   const currentImageId = order[index] ?? null;
+  const nextImageId = order[index + 1] ?? null;
   const percent =
     order.length === 0 ? 0 : Math.round((index / order.length) * 100);
+
+  // 다음 이미지를 미리 받아 두어 전환 시 로딩 대기를 줄인다.
+  useEffect(() => {
+    if (nextImageId) {
+      new window.Image().src = getImageSrc(nextImageId);
+    }
+  }, [nextImageId]);
 
   function handleSubmit(input: ImageResponseInput) {
     submitImageResponse(input);
@@ -36,16 +45,24 @@ export default function TestScreen() {
   }
 
   return (
-    <main className="pageContainer">
-      <AppHeader />
-      <TestProgress percent={percent} />
-      {currentImageId ? (
-        <TestQuestion
-          key={currentImageId}
-          imageId={currentImageId}
-          onSubmit={handleSubmit}
-        />
-      ) : null}
-    </main>
+    <div className="min-h-dvh bg-surface-muted">
+      <main className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3">
+        <div className="rounded-b-3xl bg-surface px-5">
+          <AppHeader />
+          <div className="pt-3">
+            <TestProgress percent={percent} />
+          </div>
+        </div>
+        <div className="flex-1 rounded-t-3xl bg-surface px-5 pt-6 pb-[env(safe-area-inset-bottom)]">
+          {currentImageId ? (
+            <TestQuestion
+              key={currentImageId}
+              imageId={currentImageId}
+              onSubmit={handleSubmit}
+            />
+          ) : null}
+        </div>
+      </main>
+    </div>
   );
 }

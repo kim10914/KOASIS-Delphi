@@ -1,4 +1,9 @@
-import { scaleQuestions, scaleStepLabel, scaleValues } from "@/constants/test";
+import {
+  scaleDirectionGradient,
+  scaleQuestions,
+  scaleStepLabel,
+  scaleValues,
+} from "@/constants/test";
 import type { ScaleKind } from "@/constants/test";
 import type { ScaleValue } from "@/types/survey";
 import FaceIcon from "./FaceIcon";
@@ -12,10 +17,19 @@ type ScaleQuestionProps = {
 
 // 양 끝에서 중앙으로 가늘어지는 방향 표시 막대
 const wedgeStyle = {
-  background:
-    "linear-gradient(90deg, #dd191c, #feb330 45%, #ffffff 50%, #9de423 55%, #00d660)",
+  background: scaleDirectionGradient,
   clipPath: "polygon(0 0, 50% 42%, 100% 0, 100% 100%, 50% 58%, 0 100%)",
 } as const;
+
+function getEndLabel(step: number, low: string, high: string) {
+  if (step === scaleValues[0]) {
+    return low;
+  }
+  if (step === scaleValues[scaleValues.length - 1]) {
+    return high;
+  }
+  return undefined;
+}
 
 export default function ScaleQuestion({
   kind,
@@ -38,15 +52,9 @@ export default function ScaleQuestion({
         {scaleValues.map((step) => {
           const selected = value === step;
           return (
-            <button
+            <label
               key={step}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              aria-label={scaleStepLabel(low, high, step)}
-              disabled={disabled}
-              onClick={() => onChange(step)}
-              className={`flex size-11 items-center justify-center rounded-full transition ${
+              className={`flex size-11 items-center justify-center rounded-full transition has-focus-visible:ring-2 has-focus-visible:ring-text-strong has-focus-visible:ring-offset-2 ${
                 selected
                   ? "scale-110 ring-2 ring-text-strong ring-offset-2"
                   : value === null
@@ -54,8 +62,18 @@ export default function ScaleQuestion({
                     : "opacity-40"
               }`}
             >
+              <input
+                type="radio"
+                name={kind}
+                value={step}
+                checked={selected}
+                disabled={disabled}
+                aria-label={scaleStepLabel(step, getEndLabel(step, low, high))}
+                onChange={() => onChange(step)}
+                className="sr-only"
+              />
               <FaceIcon kind={kind} step={step} />
-            </button>
+            </label>
           );
         })}
       </div>

@@ -8,6 +8,7 @@ export const testText = {
   imageRetry: "다시 불러오기",
   imageAlt: "기분을 선택할 사진",
   next: "다음 사진",
+  skip: "이 사진 건너뛰기",
 } as const;
 
 export type ScaleKind = "valence" | "arousal";
@@ -24,8 +25,12 @@ export const scaleQuestions: Record<
   },
 };
 
-export const scaleStepLabel = (low: string, high: string, step: number) =>
-  `${low}에서 ${high} 사이 ${step}단계`;
+// 이미지 로딩 재시도 허용 횟수. 이 횟수 뒤에도 실패하면 건너뛰기를 보여준다.
+export const imageMaxRetries = 3;
+
+// 선택지 접근 가능한 이름: "3단계", 양 끝은 "1단계, 불쾌함"처럼 방향을 덧붙인다.
+export const scaleStepLabel = (step: number, endLabel?: string) =>
+  endLabel ? `${step}단계, ${endLabel}` : `${step}단계`;
 
 // 7단계 얼굴 아이콘 색상 (좌에서 우, 1~7). docs/design-tokens.md 참고.
 export const scaleColors = [
@@ -37,6 +42,9 @@ export const scaleColors = [
   "#52d20e",
   "#00d660",
 ] as const;
+
+// 방향 막대 그라데이션: 1, 3, 5, 7단계 색을 쓴다.
+export const scaleDirectionGradient = `linear-gradient(90deg, ${scaleColors[0]}, ${scaleColors[2]} 45%, var(--color-surface) 50%, ${scaleColors[4]} 55%, ${scaleColors[6]})`;
 
 export const scaleValues: readonly ScaleValue[] = [1, 2, 3, 4, 5, 6, 7];
 

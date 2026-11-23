@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "@/components/Button";
 import { testText } from "@/constants/test";
+import type { ImageResponseInput } from "@/lib/storage/surveySession";
 import { useImageTimer } from "@/lib/survey/useImageTimer";
 import type { ScaleValue } from "@/types/survey";
 import ScaleQuestion from "./ScaleQuestion";
@@ -8,11 +9,7 @@ import TestImage from "./TestImage";
 
 type TestQuestionProps = {
   imageId: string;
-  onSubmit: (input: {
-    valence: ScaleValue;
-    arousal: ScaleValue;
-    responseMs: number;
-  }) => void;
+  onSubmit: (input: ImageResponseInput) => void;
 };
 
 /**
@@ -28,6 +25,11 @@ export default function TestQuestion({ imageId, onSubmit }: TestQuestionProps) {
   // 이미지가 실제로 표시된 뒤부터 시간을 센다.
   const { finish } = useImageTimer(displayed ? imageId : null);
 
+  // 새 이미지가 마운트될 때 맨 위로 돌려 이미지가 화면 밖에 남지 않게 한다.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const canSubmit = displayed && valence !== null && arousal !== null;
 
   function handleSubmit() {
@@ -40,10 +42,28 @@ export default function TestQuestion({ imageId, onSubmit }: TestQuestionProps) {
     onSubmit({ valence, arousal, responseMs: finish() });
   }
 
+  function handleSkip() {
+    if (lockRef.current) {
+      return;
+    }
+    lockRef.current = true;
+    setSubmitted(true);
+    onSubmit({
+      valence: null,
+      arousal: null,
+      responseMs: finish(),
+      skipped: true,
+    });
+  }
+
   return (
     <div className="flex flex-col gap-6 pb-6">
       <p className="text-xl font-semibold break-keep">{testText.guide}</p>
-      <TestImage imageId={imageId} onDisplayed={() => setDisplayed(true)} />
+      <TestImage
+        imageId={imageId}
+        onDisplayed={() => setDisplayed(true)}
+        onSkip={handleSkip}
+      />
       <ScaleQuestion
         kind="valence"
         value={valence}

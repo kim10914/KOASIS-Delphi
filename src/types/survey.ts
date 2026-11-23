@@ -18,11 +18,14 @@ export type ImageResponse = {
   imageId: string;
   // 이미지 표시 순서(0부터)
   orderIndex: number;
-  valence: ScaleValue;
-  arousal: ScaleValue;
+  // 이미지 로딩 실패로 건너뛴 응답은 null이다.
+  valence: ScaleValue | null;
+  arousal: ScaleValue | null;
   // 이미지가 화면에 표시된 누적 시간(ms). 새로고침 전후 구간을 합산한다.
   responseMs: number;
   respondedAt: string;
+  // 이미지를 불러오지 못해 건너뛴 경우 true
+  skipped?: boolean;
 };
 
 export type MoodQuadrant =
