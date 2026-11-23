@@ -1,10 +1,20 @@
 import { consentTextVersion } from "@/constants/consent";
+import { moodGridSize } from "@/constants/flow";
 import { genderOptions, regionOptions } from "@/constants/info";
-import type { FaceConsent, Participant } from "@/types/survey";
+import type {
+  FaceConsent,
+  ImageResponse,
+  MoodCheck,
+  MoodPhase,
+  Participant,
+  SurveyResultSummary,
+  SurveySession,
+} from "@/types/survey";
 
-const participantKey = "mindMirror.participant";
+// 같은 탭 이어가기에 필요한 최소 상태만 sessionStorage에 둔다. localStorage는 쓰지 않는다.
+const sessionKey = "mindMirror.session";
 
-const faceConsentKey = "mindMirror.faceConsent";
+const resultKey = "mindMirror.result";
 
 const participantFields: (keyof Participant)[] = [
   "name",
@@ -38,9 +48,6 @@ function readStorageJson(key: string): StorageReadResult {
 }
 
 function writeStorageJson(key: string, serialized: string) {
-  if (typeof window === "undefined") {
-    return;
-  }
   try {
     window.sessionStorage.setItem(key, serialized);
   } catch {
@@ -49,9 +56,6 @@ function writeStorageJson(key: string, serialized: string) {
 }
 
 function removeStorageKey(key: string) {
-  if (typeof window === "undefined") {
-    return;
-  }
   try {
     window.sessionStorage.removeItem(key);
   } catch {
@@ -115,23 +119,70 @@ function createSessionStore<T>(
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function isParticipant(value: unknown): value is Participant {
-  if (typeof value !== "object" || value === null) {
+  if (!isRecord(value)) {
     return false;
   }
-  const record = value as Record<string, unknown>;
-  return participantFields.every((field) => typeof record[field] === "string");
+  return participantFields.every((field) => typeof value[field] === "string");
 }
 
 function isFaceConsent(value: unknown): value is FaceConsent {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-  const record = value as Record<string, unknown>;
   return (
-    typeof record.agreed === "boolean" &&
-    typeof record.at === "string" &&
-    typeof record.textVersion === "string"
+    isRecord(value) &&
+    typeof value.agreed === "boolean" &&
+    typeof value.at === "string" &&
+    typeof value.textVersion === "string"
+  );
+}
+
+function isNonNegativeNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+function isGridIndex(value: unknown) {
+  return (
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 1 &&
+    value <= moodGridSize
+  );
+}
+
+function isScale(value: unknown) {
+  return (
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 1 &&
+    value <= 7
+  );
+}
+
+function isMoodCheck(value: unknown): value is MoodCheck {
+  return (
+    isRecord(value) &&
+    typeof value.emotion === "string" &&
+    typeof value.quadrant === "string" &&
+    isGridIndex(value.row) &&
+    isGridIndex(value.col) &&
+    typeof value.checkedAt === "string"
+  );
+}
+
+function isImageResponse(value: unknown): value is ImageResponse {
+  return (
+    isRecord(value) &&
+    typeof value.imageId === "string" &&
+    typeof value.orderIndex === "number" &&
+    Number.isInteger(value.orderIndex) &&
+    value.orderIndex >= 0 &&
+    isScale(value.valence) &&
+    isScale(value.arousal) &&
+    isNonNegativeNumber(value.responseMs) &&
+    typeof value.respondedAt === "string"
   );
 }
 
@@ -149,35 +200,175 @@ function sanitizeParticipant(participant: Participant): Participant {
   };
 }
 
-const participantStore = createSessionStore<Participant>(
-  participantKey,
-  (value) => (isParticipant(value) ? sanitizeParticipant(value) : null),
+// 구조가 어긋난 저장값(수동 편집, 버전 변경)은 통째로 버려 잘못된 상태로 이어가지 않는다.
+function parseSession(value: unknown): SurveySession | null {
+  if (
+    !isRecord(value) ||
+    typeof value.sessionId !== "string" ||
+    typeof value.startedAt !== "string" ||
+    !isParticipant(value.participant) ||
+    !isNonNegativeNumber(value.currentImageElapsedMs) ||
+    !Array.isArray(value.responses) ||
+    !value.responses.every(isImageResponse)
+  ) {
+    return null;
+  }
+  const imageOrder =
+    Array.isArray(value.imageOrder) &&
+    value.imageOrder.every((id) => typeof id === "string")
+      ? (value.imageOrder as string[])
+      : null;
+  const responses = value.responses as ImageResponse[];
+  // 응답은 이미지 순서의 앞에서부터 차례로 쌓인 것이어야 한다.
+  const responsesMatchOrder = responses.every(
+    (response, index) =>
+      imageOrder !== null &&
+      response.orderIndex === index &&
+      imageOrder[index] === response.imageId,
+  );
+  if (!responsesMatchOrder) {
+    return null;
+  }
+  return {
+    sessionId: value.sessionId,
+    startedAt: value.startedAt,
+    participant: sanitizeParticipant(value.participant),
+    faceConsent: isFaceConsent(value.faceConsent) ? value.faceConsent : null,
+    preMood: isMoodCheck(value.preMood) ? value.preMood : null,
+    imageOrder,
+    responses,
+    currentImageElapsedMs: value.currentImageElapsedMs,
+    postMood: isMoodCheck(value.postMood) ? value.postMood : null,
+  };
+}
+
+function parseResult(value: unknown): SurveyResultSummary | null {
+  if (
+    !isRecord(value) ||
+    typeof value.sessionId !== "string" ||
+    typeof value.participantName !== "string" ||
+    !isMoodCheck(value.postMood)
+  ) {
+    return null;
+  }
+  return {
+    sessionId: value.sessionId,
+    participantName: value.participantName,
+    postMood: value.postMood,
+  };
+}
+
+const sessionStore = createSessionStore<SurveySession>(
+  sessionKey,
+  parseSession,
 );
 
-const faceConsentStore = createSessionStore<FaceConsent>(
-  faceConsentKey,
-  (value) => (isFaceConsent(value) ? value : null),
+const resultStore = createSessionStore<SurveyResultSummary>(
+  resultKey,
+  parseResult,
 );
 
-export const subscribeParticipant = participantStore.subscribe;
+function createSessionId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
+// 진행 중인 세션이 있을 때만 변경을 적용한다. 세션이 없으면 아무것도 하지 않는다.
+function updateSession(update: (session: SurveySession) => SurveySession) {
+  const session = sessionStore.load();
+  if (!session) {
+    return;
+  }
+  sessionStore.save(update(session));
+}
+
+// ---- 세션 전체 ----
+
+export const subscribeSession = sessionStore.subscribe;
+
+export function getSessionServerSnapshot(): SurveySession | null {
+  return null;
+}
+
+export function loadSession(): SurveySession | null {
+  return sessionStore.load();
+}
+
+export function clearSession() {
+  sessionStore.clear();
+}
+
+// ---- 결과 요약 ----
+
+export const subscribeResult = resultStore.subscribe;
+
+export function getResultServerSnapshot(): SurveyResultSummary | null {
+  return null;
+}
+
+export function loadResult(): SurveyResultSummary | null {
+  return resultStore.load();
+}
+
+export function saveResult(summary: SurveyResultSummary) {
+  resultStore.save(summary);
+}
+
+export function clearResult() {
+  resultStore.clear();
+}
+
+// ---- 참여자 정보 (세션 시작점) ----
+
+export const subscribeParticipant = sessionStore.subscribe;
 
 export function getParticipantServerSnapshot(): Participant | null {
   return null;
 }
 
+// 세션이 없으면 새 세션을 시작하고, 있으면 같은 세션의 참여자 정보만 갱신한다.
 export function saveParticipant(participant: Participant) {
-  participantStore.save(sanitizeParticipant(participant));
+  const sanitized = sanitizeParticipant(participant);
+  const session = sessionStore.load();
+  if (session) {
+    sessionStore.save({ ...session, participant: sanitized });
+    return;
+  }
+  resultStore.clear();
+  sessionStore.save({
+    sessionId: createSessionId(),
+    startedAt: new Date().toISOString(),
+    participant: sanitized,
+    faceConsent: null,
+    preMood: null,
+    imageOrder: null,
+    responses: [],
+    currentImageElapsedMs: 0,
+    postMood: null,
+  });
 }
 
+// 다른 참여자가 처음부터 시작할 수 있도록 세션 전체를 지운다.
 export function clearParticipant() {
-  participantStore.clear();
+  sessionStore.clear();
 }
 
+let cachedParticipant: Participant | null = null;
+
+// 응답 저장 등으로 세션이 바뀌어도 참여자 정보가 같으면 같은 참조를 돌려준다.
 export function loadParticipant(): Participant | null {
-  return participantStore.load();
+  const next = sessionStore.load()?.participant ?? null;
+  if (JSON.stringify(next) !== JSON.stringify(cachedParticipant)) {
+    cachedParticipant = next;
+  }
+  return cachedParticipant;
 }
 
-export const subscribeFaceConsent = faceConsentStore.subscribe;
+// ---- 표정 분석 동의 ----
+
+export const subscribeFaceConsent = sessionStore.subscribe;
 
 export function getFaceConsentServerSnapshot(): FaceConsent | null {
   return null;
@@ -187,17 +378,90 @@ export function saveFaceConsent(
   agreed: boolean,
   textVersion: string = consentTextVersion,
 ): void {
-  faceConsentStore.save({
-    agreed,
-    at: new Date().toISOString(),
-    textVersion,
-  });
+  updateSession((session) => ({
+    ...session,
+    faceConsent: { agreed, at: new Date().toISOString(), textVersion },
+  }));
 }
 
+let cachedFaceConsent: FaceConsent | null = null;
+
 export function loadFaceConsent(): FaceConsent | null {
-  return faceConsentStore.load();
+  const next = sessionStore.load()?.faceConsent ?? null;
+  if (JSON.stringify(next) !== JSON.stringify(cachedFaceConsent)) {
+    cachedFaceConsent = next;
+  }
+  return cachedFaceConsent;
 }
 
 export function clearFaceConsent(): void {
-  faceConsentStore.clear();
+  updateSession((session) => ({ ...session, faceConsent: null }));
+}
+
+// ---- 무드미터 ----
+
+export function saveMood(phase: MoodPhase, mood: MoodCheck) {
+  updateSession((session) =>
+    phase === "pre"
+      ? { ...session, preMood: mood }
+      : { ...session, postMood: mood },
+  );
+}
+
+// ---- 본조사 ----
+
+// 이미지 순서는 한 번만 확정한다. 이미 있으면(새로고침, 뒤로가기) 그대로 둔다.
+export function startTest(imageOrder: string[]) {
+  updateSession((session) =>
+    session.imageOrder
+      ? session
+      : {
+          ...session,
+          imageOrder,
+          responses: [],
+          currentImageElapsedMs: 0,
+        },
+  );
+}
+
+export type ImageResponseInput = Pick<
+  ImageResponse,
+  "valence" | "arousal" | "responseMs"
+>;
+
+// 현재 위치의 이미지에 대한 응답을 추가하고 다음 이미지로 넘어간다.
+export function submitImageResponse(input: ImageResponseInput) {
+  updateSession((session) => {
+    const order = session.imageOrder;
+    const index = session.responses.length;
+    if (!order || index >= order.length) {
+      return session;
+    }
+    return {
+      ...session,
+      responses: [
+        ...session.responses,
+        {
+          imageId: order[index],
+          orderIndex: index,
+          valence: input.valence,
+          arousal: input.arousal,
+          responseMs: Math.max(0, Math.round(input.responseMs)),
+          respondedAt: new Date().toISOString(),
+        },
+      ],
+      currentImageElapsedMs: 0,
+    };
+  });
+}
+
+// 새로고침·탭 숨김으로 끊기기 전까지 표시된 시간을 현재 이미지의 누적 시간에 더한다.
+export function addCurrentImageElapsedMs(deltaMs: number) {
+  if (deltaMs <= 0) {
+    return;
+  }
+  updateSession((session) => ({
+    ...session,
+    currentImageElapsedMs: session.currentImageElapsedMs + Math.round(deltaMs),
+  }));
 }

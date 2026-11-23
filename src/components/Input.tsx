@@ -36,7 +36,7 @@ export default function Input({
     >
       <input
         id={inputId}
-        className={`h-14 w-full rounded-[var(--radius-input)] border bg-surface px-5 text-base text-text-strong outline-none placeholder:text-text-muted/70 disabled:bg-surface-muted ${
+        className={`h-14 w-full rounded-[var(--radius-input)] border bg-surface px-5 text-base text-text-strong outline-none placeholder:text-text-muted disabled:bg-surface-muted ${
           error
             ? "border-error focus:border-error"
             : "border-border focus:border-text-strong"

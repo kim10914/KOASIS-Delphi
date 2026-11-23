@@ -1,13 +1,10 @@
-import ScreenPlaceholder from "@/components/ScreenPlaceholder";
-import { routes } from "@/constants/routes";
+import SurveyGuard from "@/components/SurveyGuard";
+import FlowStubScreen from "@/views/flow/components/FlowStubScreen";
 
 export default function Page() {
   return (
-    <ScreenPlaceholder
-      title="내 기분 체크하기"
-      description="3단계: 사전 무드미터 (6x6 감정 격자)"
-      nextHref={routes.ready}
-      nextLabel="제출하기"
-    />
+    <SurveyGuard route="moodPre">
+      <FlowStubScreen stage="moodPre" />
+    </SurveyGuard>
   );
 }
