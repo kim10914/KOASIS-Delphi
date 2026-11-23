@@ -1,5 +1,3 @@
-import type { MoodMeter } from "@/types/survey";
-
 export const flowText = {
   guardLoading: "불러오는 중이에요.",
   guardRedirecting: "알맞은 단계로 이동하고 있어요.",
@@ -12,27 +10,13 @@ export const flowText = {
   restart: "처음으로",
 } as const;
 
-// 감정 격자 화면 구현 전까지 사전·사후 무드미터가 임시로 기록하는 선택값.
-export const stubMood: MoodMeter & { row: number; col: number } = {
-  row: 3,
-  col: 4,
-  emotion: "유쾌한",
-  quadrant: "highEnergyPositive",
-};
-
 // 본조사 화면 구현 전까지 임시 화면이 기록하는 응답값.
 export const stubScale = 4;
 
-// 감정 격자 한 변의 칸 수(6x6)
-export const moodGridSize = 6;
+export { moodGridSize } from "@/constants/mood";
 
 // 임시 화면 단계별 문구. 각 화면을 실제로 구현할 때 해당 항목을 제거한다.
 export const stubScreens = {
-  moodPre: {
-    title: "내 기분 체크하기",
-    description: "3단계: 사전 무드미터 (6x6 감정 격자)",
-    nextLabel: "제출하기",
-  },
   ready: {
     title: "자 그럼 마음을 보는 거울 마인드 미러를 시작합니다!",
     description:
@@ -48,11 +32,6 @@ export const stubScreens = {
     title: "수고하셨습니다. 모든 조사를 마쳤습니다.",
     description: "작성해 주신 내용으로 마음의 거울을 준비해 볼게요.",
     nextLabel: "계속하기",
-  },
-  moodPost: {
-    title: "테스트를 마친 지금, 기분이 어떤가요?",
-    description: "사후 무드미터: 6x6 감정 격자",
-    nextLabel: "감정 기록하기",
   },
   loading: {
     title: "테스트 결과 도출 중...",
