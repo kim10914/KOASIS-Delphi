@@ -1,10 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import AppHeader from "@/components/AppHeader";
 import Button from "@/components/Button";
 import StepIndicator from "@/components/StepIndicator";
+import { consentConfig, surveyConfig } from "@/config/survey";
 import { consentStep, consentText } from "@/constants/consent";
 import { routes } from "@/constants/routes";
 import {
@@ -37,8 +44,31 @@ function ConsentForm({ initialAgreed }: ConsentFormProps) {
   const termsId = useId();
   const [termsAgreed, setTermsAgreed] = useState(initialAgreed);
   const [showTerms, setShowTerms] = useState(false);
+  const [showPreparingToast, setShowPreparingToast] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
+
+  const isPreparing = surveyConfig.faceRecording === "preparing";
 
   function handleAgree() {
+    if (isPreparing) {
+      setShowPreparingToast(true);
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+      toastTimerRef.current = setTimeout(() => {
+        setShowPreparingToast(false);
+      }, consentConfig.toastDurationMs);
+      return;
+    }
+
     saveFaceConsent(true);
     router.push(routes.moodPre);
   }
@@ -100,7 +130,9 @@ function ConsentForm({ initialAgreed }: ConsentFormProps) {
           </div>
         </div>
         <Button disabled={!termsAgreed} onClick={handleAgree}>
-          {consentText.agreeButton}
+          {isPreparing
+            ? consentText.preparingAgreeButton
+            : consentText.agreeButton}
         </Button>
         <section className="mt-10 flex flex-col gap-5 pb-8">
           <div className="flex flex-col gap-3">
@@ -115,6 +147,16 @@ function ConsentForm({ initialAgreed }: ConsentFormProps) {
             {consentText.surveyOnlyButton}
           </Button>
         </section>
+      </div>
+      <div
+        role="status"
+        className="pointer-events-none fixed top-[calc(1rem+env(safe-area-inset-top))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[398px] -translate-x-1/2"
+      >
+        {showPreparingToast ? (
+          <p className="rounded-[var(--radius-input)] bg-text-strong px-4 py-3 text-center text-sm font-medium break-keep text-white shadow-[var(--shadow-card)]">
+            {consentText.preparingToast}
+          </p>
+        ) : null}
       </div>
     </main>
   );
