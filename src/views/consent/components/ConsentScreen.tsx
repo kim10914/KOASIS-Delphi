@@ -11,6 +11,7 @@ import {
 import AppHeader from "@/components/AppHeader";
 import Button from "@/components/Button";
 import StepIndicator from "@/components/StepIndicator";
+import { consentConfig, surveyConfig } from "@/config/survey";
 import { consentStep, consentText } from "@/constants/consent";
 import { routes } from "@/constants/routes";
 import {
@@ -54,14 +55,22 @@ function ConsentForm({ initialAgreed }: ConsentFormProps) {
     };
   }, []);
 
+  const isPreparing = surveyConfig.faceRecording === "preparing";
+
   function handleAgree() {
-    setShowPreparingToast(true);
-    if (toastTimerRef.current) {
-      clearTimeout(toastTimerRef.current);
+    if (isPreparing) {
+      setShowPreparingToast(true);
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+      toastTimerRef.current = setTimeout(() => {
+        setShowPreparingToast(false);
+      }, consentConfig.toastDurationMs);
+      return;
     }
-    toastTimerRef.current = setTimeout(() => {
-      setShowPreparingToast(false);
-    }, 3000);
+
+    saveFaceConsent(true);
+    router.push(routes.moodPre);
   }
 
   function handleSurveyOnly() {
@@ -121,7 +130,9 @@ function ConsentForm({ initialAgreed }: ConsentFormProps) {
           </div>
         </div>
         <Button disabled={!termsAgreed} onClick={handleAgree}>
-          {consentText.agreeButton}
+          {isPreparing
+            ? consentText.preparingAgreeButton
+            : consentText.agreeButton}
         </Button>
         <section className="mt-10 flex flex-col gap-5 pb-8">
           <div className="flex flex-col gap-3">
@@ -137,15 +148,16 @@ function ConsentForm({ initialAgreed }: ConsentFormProps) {
           </Button>
         </section>
       </div>
-      {showPreparingToast ? (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed bottom-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-[398px] -translate-x-1/2 rounded-xl bg-text-strong px-4 py-3 text-center text-sm font-medium break-keep text-white shadow-lg"
-        >
-          {consentText.preparingToast}
-        </div>
-      ) : null}
+      <div
+        role="status"
+        className="pointer-events-none fixed top-[calc(1rem+env(safe-area-inset-top))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[398px] -translate-x-1/2"
+      >
+        {showPreparingToast ? (
+          <p className="rounded-[var(--radius-input)] bg-text-strong px-4 py-3 text-center text-sm font-medium break-keep text-white shadow-[var(--shadow-card)]">
+            {consentText.preparingToast}
+          </p>
+        ) : null}
+      </div>
     </main>
   );
 }

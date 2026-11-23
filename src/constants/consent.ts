@@ -18,6 +18,7 @@ export const consentText = {
     "동의하지 않아도 조사에는 처음부터 끝까지 참여할 수 있습니다.",
   ] as readonly string[],
   agreeButton: "표정 분석에 동의하고 계속하기",
+  preparingAgreeButton: "표정 분석 참여하기 (준비 중)",
   preparingToast:
     "표정 분석 기능은 준비 중이에요. 아래 '오늘은 조사만 하기'로 진행해 주세요.",
   optionalTitle: "꼭 기록하지 않아도 괜찮아요.",
