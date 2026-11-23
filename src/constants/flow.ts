@@ -13,8 +13,7 @@ export const flowText = {
 // 본조사 화면 구현 전까지 임시 화면이 기록하는 응답값.
 export const stubScale = 4;
 
-// 감정 격자 한 변의 칸 수(6x6)
-export const moodGridSize = 6;
+export { moodGridSize } from "@/constants/mood";
 
 // 임시 화면 단계별 문구. 각 화면을 실제로 구현할 때 해당 항목을 제거한다.
 export const stubScreens = {

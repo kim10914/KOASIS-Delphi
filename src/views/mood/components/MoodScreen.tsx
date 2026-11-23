@@ -50,12 +50,14 @@ type MoodFormProps = {
 function MoodForm({ phase, initialCell }: MoodFormProps) {
   const router = useRouter();
   const [cell, setCell] = useState<MoodCell | null>(initialCell);
+  const [submitted, setSubmitted] = useState(false);
   const text = moodScreenText[phase];
 
   function handleSubmit() {
-    if (!cell) {
+    if (!cell || submitted) {
       return;
     }
+    setSubmitted(true);
     saveMood(phase, {
       row: cell.row,
       col: cell.col,
@@ -81,7 +83,7 @@ function MoodForm({ phase, initialCell }: MoodFormProps) {
             {text.description}
           </p>
         </div>
-        <MoodGrid selected={cell} onSelect={setCell} />
+        <MoodGrid selected={cell} onSelect={setCell} disabled={submitted} />
         {text.selectedSummary ? (
           <p
             aria-live="polite"
@@ -90,7 +92,7 @@ function MoodForm({ phase, initialCell }: MoodFormProps) {
             {cell ? text.selectedSummary(cell.emotion) : null}
           </p>
         ) : null}
-        <Button disabled={!cell} onClick={handleSubmit}>
+        <Button disabled={!cell || submitted} onClick={handleSubmit}>
           {text.submitLabel}
         </Button>
       </div>

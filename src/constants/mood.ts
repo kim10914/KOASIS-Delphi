@@ -1,5 +1,7 @@
-import { moodGridSize } from "@/constants/flow";
 import type { MoodPhase, MoodQuadrant } from "@/types/survey";
+
+// 감정 격자 한 변의 칸 수(6x6)
+export const moodGridSize = 6;
 
 // 행 1~3은 에너지 높음, 4~6은 에너지 낮음. 열 1~3은 기분 좋지 않음, 4~6은 기분 좋음.
 // "\n"은 화면에서 줄바꿈하는 위치이고, 감정 이름은 "\n"을 공백으로 바꾼 값이다.
@@ -33,8 +35,8 @@ const moodColumnColors = {
 } as const;
 
 const moodDarkTextColumns = {
-  high: [3, 4, 5],
-  low: [2, 3, 4],
+  high: [1, 2, 3, 4, 5],
+  low: [0, 1, 2, 3, 4],
 } as const;
 
 export type MoodCell = {
@@ -65,7 +67,7 @@ export const moodCells: readonly MoodCell[] = moodEmotionRows.flatMap(
       return {
         row,
         col,
-        emotion: label.replace("\n", " "),
+        emotion: label.replaceAll("\n", " "),
         label,
         quadrant: getQuadrant(row, col),
         backgroundColor: moodColumnColors[half][colIndex],
