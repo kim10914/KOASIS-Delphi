@@ -68,7 +68,7 @@ export default function Select({
         <select
           id={selectId}
           className={`h-14 w-full appearance-none rounded-[var(--radius-input)] border bg-surface pr-12 pl-5 text-base outline-none disabled:bg-surface-muted ${
-            showPlaceholderColor ? "text-text-muted/70" : "text-text-strong"
+            showPlaceholderColor ? "text-text-muted" : "text-text-strong"
           } ${
             error
               ? "border-error focus:border-error"
@@ -81,12 +81,16 @@ export default function Select({
           aria-describedby={describedBy}
         >
           {placeholder ? (
-            <option value="" disabled>
+            <option value="" disabled className="bg-surface text-text-muted">
               {placeholder}
             </option>
           ) : null}
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option
+              key={option.value}
+              value={option.value}
+              className="bg-surface text-text-strong"
+            >
               {option.label}
             </option>
           ))}

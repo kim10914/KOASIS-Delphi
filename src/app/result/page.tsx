@@ -1,13 +1,10 @@
-import ScreenPlaceholder from "@/components/ScreenPlaceholder";
-import { routes } from "@/constants/routes";
+import SurveyGuard from "@/components/SurveyGuard";
+import FlowStubScreen from "@/views/flow/components/FlowStubScreen";
 
-export default function ResultPage() {
+export default function Page() {
   return (
-    <ScreenPlaceholder
-      title="테스트 결과"
-      description="마인드미러로 들여다본 오늘 내 마음의 상태"
-      nextHref={routes.splash}
-      nextLabel="처음으로"
-    />
+    <SurveyGuard route="result">
+      <FlowStubScreen stage="result" />
+    </SurveyGuard>
   );
 }

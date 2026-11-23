@@ -1,5 +1,10 @@
+import SurveyGuard from "@/components/SurveyGuard";
 import ConsentScreen from "@/views/consent/components/ConsentScreen";
 
 export default function Page() {
-  return <ConsentScreen />;
+  return (
+    <SurveyGuard route="consent">
+      <ConsentScreen />
+    </SurveyGuard>
+  );
 }
