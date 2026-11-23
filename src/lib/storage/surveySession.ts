@@ -172,6 +172,17 @@ function isMoodCheck(value: unknown): value is MoodCheck {
   );
 }
 
+// 정상 응답은 두 척도가 모두 1~7이고, 건너뛴 응답(skipped)은 두 척도가 모두 null이다.
+function isScaleOrSkipped(value: Record<string, unknown>) {
+  if (value.skipped === true) {
+    return value.valence === null && value.arousal === null;
+  }
+  if (value.skipped !== undefined && value.skipped !== false) {
+    return false;
+  }
+  return isScale(value.valence) && isScale(value.arousal);
+}
+
 function isImageResponse(value: unknown): value is ImageResponse {
   return (
     isRecord(value) &&
@@ -179,8 +190,7 @@ function isImageResponse(value: unknown): value is ImageResponse {
     typeof value.orderIndex === "number" &&
     Number.isInteger(value.orderIndex) &&
     value.orderIndex >= 0 &&
-    isScale(value.valence) &&
-    isScale(value.arousal) &&
+    isScaleOrSkipped(value) &&
     isNonNegativeNumber(value.responseMs) &&
     typeof value.respondedAt === "string"
   );
@@ -426,7 +436,7 @@ export function startTest(imageOrder: string[]) {
 
 export type ImageResponseInput = Pick<
   ImageResponse,
-  "valence" | "arousal" | "responseMs"
+  "valence" | "arousal" | "responseMs" | "skipped"
 >;
 
 // 현재 위치의 이미지에 대한 응답을 추가하고 다음 이미지로 넘어간다.
@@ -446,6 +456,7 @@ export function submitImageResponse(input: ImageResponseInput) {
           orderIndex: index,
           valence: input.valence,
           arousal: input.arousal,
+          ...(input.skipped ? { skipped: true } : {}),
           responseMs: Math.max(0, Math.round(input.responseMs)),
           respondedAt: new Date().toISOString(),
         },
