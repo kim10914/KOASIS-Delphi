@@ -8,6 +8,12 @@ export type Participant = {
   region: string;
 };
 
+export type FaceConsent = {
+  agreed: boolean;
+  at: string;
+  textVersion: string;
+};
+
 export type ImageResponse = {
   imageId: string;
   valence: ScaleValue;
