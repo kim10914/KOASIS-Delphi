@@ -1,17 +1,42 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useId, useState, useSyncExternalStore } from "react";
 import AppHeader from "@/components/AppHeader";
 import Button from "@/components/Button";
 import StepIndicator from "@/components/StepIndicator";
 import { consentStep, consentText } from "@/constants/consent";
 import { routes } from "@/constants/routes";
-import { saveFaceConsent } from "@/lib/storage/surveySession";
+import {
+  getFaceConsentServerSnapshot,
+  loadFaceConsent,
+  saveFaceConsent,
+  subscribeFaceConsent,
+} from "@/lib/storage/surveySession";
 
 export default function ConsentScreen() {
+  const faceConsent = useSyncExternalStore(
+    subscribeFaceConsent,
+    loadFaceConsent,
+    getFaceConsentServerSnapshot,
+  );
+  const storedAgreed = faceConsent?.agreed === true;
+
+  // 저장된 동의가 클라이언트에서 확인되면 key가 바뀌어 폼 상태가 그 값으로 다시 시작된다.
+  return (
+    <ConsentForm key={String(storedAgreed)} initialAgreed={storedAgreed} />
+  );
+}
+
+type ConsentFormProps = {
+  initialAgreed: boolean;
+};
+
+function ConsentForm({ initialAgreed }: ConsentFormProps) {
   const router = useRouter();
-  const [termsAgreed, setTermsAgreed] = useState(false);
+  const termsId = useId();
+  const [termsAgreed, setTermsAgreed] = useState(initialAgreed);
+  const [showTerms, setShowTerms] = useState(false);
 
   function handleAgree() {
     saveFaceConsent(true);
@@ -36,15 +61,44 @@ export default function ConsentScreen() {
             {consentText.description}
           </p>
         </div>
-        <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-text-strong">
-          <input
-            type="checkbox"
-            checked={termsAgreed}
-            onChange={(event) => setTermsAgreed(event.target.checked)}
-            className="size-5 shrink-0 cursor-pointer rounded-[4px] accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          />
-          <span>{consentText.termsLabel}</span>
-        </label>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-text-strong">
+              <input
+                type="checkbox"
+                checked={termsAgreed}
+                onChange={(event) => setTermsAgreed(event.target.checked)}
+                className="size-5 shrink-0 cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              />
+              <span>{consentText.termsLabel}</span>
+            </label>
+            <button
+              type="button"
+              aria-expanded={showTerms}
+              aria-controls={termsId}
+              onClick={() => setShowTerms((prev) => !prev)}
+              className="min-h-11 shrink-0 cursor-pointer px-2 text-sm text-text-muted underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              {showTerms
+                ? consentText.termsToggleClose
+                : consentText.termsToggleOpen}
+            </button>
+          </div>
+          <div
+            id={termsId}
+            hidden={!showTerms}
+            className="flex flex-col gap-2 rounded-lg bg-black/5 p-4 text-sm leading-relaxed break-keep text-text-muted"
+          >
+            <h2 className="font-bold text-text-strong">
+              {consentText.termsTitle}
+            </h2>
+            <ul className="list-disc pl-5">
+              {consentText.termsItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
         <Button disabled={!termsAgreed} onClick={handleAgree}>
           {consentText.agreeButton}
         </Button>
