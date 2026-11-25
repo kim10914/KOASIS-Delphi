@@ -1,5 +1,6 @@
 import { surveyConfig } from "@/config/survey";
 import { surveyRepository } from "@/lib/storage";
+import { SurveySubmissionRejectedError } from "@/lib/storage/supabaseSurveyRepository";
 import {
   clearSession,
   loadSession,
@@ -35,7 +36,8 @@ export function buildSubmission(
   };
 }
 
-export type SubmitSurveyOutcome = "saved" | "network-error" | "invalid";
+export type SubmitSurveyOutcome =
+  "saved" | "network-error" | "rejected" | "invalid";
 
 let inFlight: Promise<SubmitSurveyOutcome> | null = null;
 
@@ -65,7 +67,12 @@ export function submitSurvey(): Promise<SubmitSurveyOutcome> {
       clearSession();
       return "saved";
     })
-    .catch((): SubmitSurveyOutcome => "network-error")
+    .catch((error: unknown): SubmitSurveyOutcome => {
+      if (error instanceof SurveySubmissionRejectedError) {
+        return "rejected";
+      }
+      return "network-error";
+    })
     .finally(() => {
       inFlight = null;
     });
