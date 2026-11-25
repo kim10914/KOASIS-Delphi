@@ -1,12 +1,11 @@
-import { consentTextVersion } from "@/constants/consent";
 import { moodGridSize } from "@/constants/flow";
 import { genderOptions, regionOptions } from "@/constants/info";
 import type {
-  FaceConsent,
   ImageResponse,
   MoodCheck,
   MoodPhase,
   Participant,
+  PrivacyConsent,
   SurveyResultSummary,
   SurveySession,
 } from "@/types/survey";
@@ -130,15 +129,6 @@ function isParticipant(value: unknown): value is Participant {
   return participantFields.every((field) => typeof value[field] === "string");
 }
 
-function isFaceConsent(value: unknown): value is FaceConsent {
-  return (
-    isRecord(value) &&
-    typeof value.agreed === "boolean" &&
-    typeof value.at === "string" &&
-    typeof value.textVersion === "string"
-  );
-}
-
 function isNonNegativeNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
@@ -210,6 +200,15 @@ function sanitizeParticipant(participant: Participant): Participant {
   };
 }
 
+function isPrivacyConsent(value: unknown): value is PrivacyConsent {
+  return (
+    isRecord(value) &&
+    value.agreed === true &&
+    typeof value.at === "string" &&
+    typeof value.textVersion === "string"
+  );
+}
+
 // 구조가 어긋난 저장값(수동 편집, 버전 변경)은 통째로 버려 잘못된 상태로 이어가지 않는다.
 function parseSession(value: unknown): SurveySession | null {
   if (
@@ -243,7 +242,9 @@ function parseSession(value: unknown): SurveySession | null {
     sessionId: value.sessionId,
     startedAt: value.startedAt,
     participant: sanitizeParticipant(value.participant),
-    faceConsent: isFaceConsent(value.faceConsent) ? value.faceConsent : null,
+    privacyConsent: isPrivacyConsent(value.privacyConsent)
+      ? value.privacyConsent
+      : null,
     preMood: isMoodCheck(value.preMood) ? value.preMood : null,
     imageOrder,
     responses,
@@ -338,12 +339,15 @@ export function getParticipantServerSnapshot(): Participant | null {
   return null;
 }
 
-// 세션이 없으면 새 세션을 시작하고, 있으면 같은 세션의 참여자 정보만 갱신한다.
-export function saveParticipant(participant: Participant) {
+// 세션이 없으면 새 세션을 시작하고, 있으면 같은 세션의 참여자 정보와 동의 내역을 갱신한다.
+export function saveParticipant(
+  participant: Participant,
+  privacyConsent: PrivacyConsent,
+) {
   const sanitized = sanitizeParticipant(participant);
   const session = sessionStore.load();
   if (session) {
-    sessionStore.save({ ...session, participant: sanitized });
+    sessionStore.save({ ...session, participant: sanitized, privacyConsent });
     return;
   }
   resultStore.clear();
@@ -351,7 +355,7 @@ export function saveParticipant(participant: Participant) {
     sessionId: createSessionId(),
     startedAt: new Date().toISOString(),
     participant: sanitized,
-    faceConsent: null,
+    privacyConsent,
     preMood: null,
     imageOrder: null,
     responses: [],
@@ -374,38 +378,6 @@ export function loadParticipant(): Participant | null {
     cachedParticipant = next;
   }
   return cachedParticipant;
-}
-
-// ---- 표정 분석 동의 ----
-
-export const subscribeFaceConsent = sessionStore.subscribe;
-
-export function getFaceConsentServerSnapshot(): FaceConsent | null {
-  return null;
-}
-
-export function saveFaceConsent(
-  agreed: boolean,
-  textVersion: string = consentTextVersion,
-): void {
-  updateSession((session) => ({
-    ...session,
-    faceConsent: { agreed, at: new Date().toISOString(), textVersion },
-  }));
-}
-
-let cachedFaceConsent: FaceConsent | null = null;
-
-export function loadFaceConsent(): FaceConsent | null {
-  const next = sessionStore.load()?.faceConsent ?? null;
-  if (JSON.stringify(next) !== JSON.stringify(cachedFaceConsent)) {
-    cachedFaceConsent = next;
-  }
-  return cachedFaceConsent;
-}
-
-export function clearFaceConsent(): void {
-  updateSession((session) => ({ ...session, faceConsent: null }));
 }
 
 // ---- 무드미터 ----

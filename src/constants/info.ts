@@ -82,3 +82,17 @@ export const infoErrors = {
   jobTooLong: `직업은 ${infoRules.jobMax}자 이하로 입력해주세요.`,
   regionRequired: "지역을 선택해주세요.",
 } as const;
+
+// 발주처(#31) 최종 동의문 수령 전 임시 안내문. 확정본 수령 시 이 상수만 교체한다.
+export const infoPrivacyConsent = {
+  textVersion: "v1-temp",
+  label: "(필수) 개인정보 수집 및 이용에 동의합니다.",
+  toggleShow: "내용 보기",
+  toggleHide: "내용 닫기",
+  details: [
+    "수집 항목: 이름, 생년월일, 성별, 직업, 지역",
+    "이용 목적: 연구 조사 진행 및 통계 분석",
+    "보유 및 이용 기간: 연구 종료 및 보관 정책 확정 기준에 따름 (임시 안내)",
+    "동의를 거부할 권리가 있으며, 거부 시 조사에 참여할 수 없습니다.",
+  ],
+} as const;

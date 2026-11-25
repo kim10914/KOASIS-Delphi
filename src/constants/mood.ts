@@ -86,7 +86,7 @@ export const moodGridText = {
   groupLabel: "감정 격자",
 } as const;
 
-export const moodStep = 3;
+export const moodStep = 2;
 
 type MoodScreenText = {
   title: string;

@@ -20,7 +20,7 @@ npm run format
 
 ## 화면 흐름
 
-`/` 스플래시 → `/info` → `/consent` → `/mood/pre` → `/ready` → `/test` → `/done` → `/mood/post` → `/loading` → `/result`
+`/` 스플래시 → `/info` → `/mood/pre` → `/ready` → `/test` → `/done` → `/mood/post` → `/loading` → `/result`
 
 ## 구조
 
@@ -40,7 +40,6 @@ src/
 
 - 세션당 이미지 수: 20장, 랜덤
 - 본조사 UI: Type 2 (캐릭터 아이콘)
-- 표정 녹화: 동의 여부만 저장 (카메라 미사용)
 
 ## 코드 컨벤션
 

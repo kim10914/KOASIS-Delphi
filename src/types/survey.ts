@@ -8,8 +8,8 @@ export type Participant = {
   region: string;
 };
 
-export type FaceConsent = {
-  agreed: boolean;
+export type PrivacyConsent = {
+  agreed: true;
   at: string;
   textVersion: string;
 };
@@ -53,7 +53,7 @@ export type SurveySession = {
   sessionId: string;
   startedAt: string;
   participant: Participant;
-  faceConsent: FaceConsent | null;
+  privacyConsent: PrivacyConsent | null;
   preMood: MoodCheck | null;
   // 세션 시작 시 한 번 확정한 이미지 표시 순서. 새로고침해도 바뀌지 않는다.
   imageOrder: string[] | null;
@@ -70,7 +70,7 @@ export type SurveySubmission = {
   completedAt: string;
   uiType: string;
   participant: Participant;
-  faceConsent: FaceConsent;
+  privacyConsent: PrivacyConsent;
   preMood: MoodCheck;
   imageOrder: string[];
   responses: ImageResponse[];

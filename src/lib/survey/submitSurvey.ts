@@ -13,7 +13,7 @@ export function buildSubmission(
 ): SurveySubmission | null {
   if (
     !isParticipantComplete(session) ||
-    !session.faceConsent ||
+    !session.privacyConsent ||
     !session.preMood ||
     !session.imageOrder ||
     !isTestComplete(session) ||
@@ -27,7 +27,7 @@ export function buildSubmission(
     completedAt: new Date().toISOString(),
     uiType: surveyConfig.testUiType,
     participant: session.participant,
-    faceConsent: session.faceConsent,
+    privacyConsent: session.privacyConsent,
     preMood: session.preMood,
     imageOrder: session.imageOrder,
     responses: session.responses,

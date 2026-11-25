@@ -12,7 +12,7 @@ export const buttonText = {
 } as const;
 
 export const stepIndicatorText = {
-  defaultTotalSteps: 3,
+  defaultTotalSteps: 2,
   label: "진행 단계",
   stepLabel: (step: number, total: number) => `${total}단계 중 ${step}단계`,
 } as const;
