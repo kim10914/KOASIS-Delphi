@@ -1,11 +1,3 @@
-"use client";
-
-import { useSyncExternalStore } from "react";
-import {
-  getResultServerSnapshot,
-  loadResult,
-  subscribeResult,
-} from "@/lib/storage/surveySession";
 import CompletionNotice from "@/views/flow/components/CompletionNotice";
 
 /**
@@ -13,11 +5,5 @@ import CompletionNotice from "@/views/flow/components/CompletionNotice";
  * 결과 산출 규칙이 미확정이므로 결과를 확정처럼 노출하지 않는다.
  */
 export default function ResultStubScreen() {
-  const result = useSyncExternalStore(
-    subscribeResult,
-    loadResult,
-    getResultServerSnapshot,
-  );
-
-  return <CompletionNotice participantName={result?.participantName} />;
+  return <CompletionNotice />;
 }
