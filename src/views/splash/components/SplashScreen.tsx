@@ -6,6 +6,7 @@ import { splashSteps, splashText, type SplashStep } from "@/constants/splash";
 import {
   clearFaceConsent,
   clearParticipant,
+  clearResult,
 } from "@/lib/storage/surveySession";
 import SplashBackground from "./SplashBackground";
 import SplashBrand from "./SplashBrand";
@@ -17,6 +18,7 @@ export default function SplashScreen() {
   useEffect(() => {
     clearParticipant();
     clearFaceConsent();
+    clearResult();
   }, []);
 
   useEffect(() => {

@@ -1,10 +1,10 @@
 import SurveyGuard from "@/components/SurveyGuard";
-import FlowStubScreen from "@/views/flow/components/FlowStubScreen";
+import SaveScreen from "@/views/flow/components/SaveScreen";
 
 export default function Page() {
   return (
     <SurveyGuard route="loading">
-      <FlowStubScreen stage="loading" />
+      <SaveScreen />
     </SurveyGuard>
   );
 }

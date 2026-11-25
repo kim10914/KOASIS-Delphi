@@ -35,7 +35,9 @@ export function buildSubmission(
   };
 }
 
-let inFlight: Promise<boolean> | null = null;
+export type SubmitSurveyOutcome = "saved" | "network-error" | "invalid";
+
+let inFlight: Promise<SubmitSurveyOutcome> | null = null;
 
 /**
  * 같은 세션의 모든 응답을 한 번에 저장한다.
@@ -43,27 +45,27 @@ let inFlight: Promise<boolean> | null = null;
  * 실패하면 아무것도 지우지 않으므로 같은 응답으로 다시 시도할 수 있다.
  * 동시에 여러 번 호출돼도(예: 개발 모드 이중 실행) 저장은 한 번만 진행한다.
  */
-export function submitSurvey(): Promise<boolean> {
+export function submitSurvey(): Promise<SubmitSurveyOutcome> {
   if (inFlight) {
     return inFlight;
   }
   const session = loadSession();
   const submission = session ? buildSubmission(session) : null;
   if (!session || !submission) {
-    return Promise.resolve(false);
+    return Promise.resolve("invalid");
   }
   inFlight = surveyRepository
     .saveSubmission(submission)
-    .then(() => {
+    .then((): SubmitSurveyOutcome => {
       saveResult({
         sessionId: session.sessionId,
         participantName: session.participant.name,
         postMood: submission.postMood,
       });
       clearSession();
-      return true;
+      return "saved";
     })
-    .catch(() => false)
+    .catch((): SubmitSurveyOutcome => "network-error")
     .finally(() => {
       inFlight = null;
     });
