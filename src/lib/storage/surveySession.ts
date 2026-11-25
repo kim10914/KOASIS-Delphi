@@ -5,6 +5,7 @@ import type {
   MoodCheck,
   MoodPhase,
   Participant,
+  PrivacyConsent,
   SurveyResultSummary,
   SurveySession,
 } from "@/types/survey";
@@ -199,6 +200,15 @@ function sanitizeParticipant(participant: Participant): Participant {
   };
 }
 
+function isPrivacyConsent(value: unknown): value is PrivacyConsent {
+  return (
+    isRecord(value) &&
+    value.agreed === true &&
+    typeof value.at === "string" &&
+    typeof value.textVersion === "string"
+  );
+}
+
 // 구조가 어긋난 저장값(수동 편집, 버전 변경)은 통째로 버려 잘못된 상태로 이어가지 않는다.
 function parseSession(value: unknown): SurveySession | null {
   if (
@@ -232,6 +242,9 @@ function parseSession(value: unknown): SurveySession | null {
     sessionId: value.sessionId,
     startedAt: value.startedAt,
     participant: sanitizeParticipant(value.participant),
+    privacyConsent: isPrivacyConsent(value.privacyConsent)
+      ? value.privacyConsent
+      : null,
     preMood: isMoodCheck(value.preMood) ? value.preMood : null,
     imageOrder,
     responses,
@@ -326,12 +339,15 @@ export function getParticipantServerSnapshot(): Participant | null {
   return null;
 }
 
-// 세션이 없으면 새 세션을 시작하고, 있으면 같은 세션의 참여자 정보만 갱신한다.
-export function saveParticipant(participant: Participant) {
+// 세션이 없으면 새 세션을 시작하고, 있으면 같은 세션의 참여자 정보와 동의 내역을 갱신한다.
+export function saveParticipant(
+  participant: Participant,
+  privacyConsent: PrivacyConsent,
+) {
   const sanitized = sanitizeParticipant(participant);
   const session = sessionStore.load();
   if (session) {
-    sessionStore.save({ ...session, participant: sanitized });
+    sessionStore.save({ ...session, participant: sanitized, privacyConsent });
     return;
   }
   resultStore.clear();
@@ -339,6 +355,7 @@ export function saveParticipant(participant: Participant) {
     sessionId: createSessionId(),
     startedAt: new Date().toISOString(),
     participant: sanitized,
+    privacyConsent,
     preMood: null,
     imageOrder: null,
     responses: [],

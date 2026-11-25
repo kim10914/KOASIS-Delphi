@@ -19,6 +19,7 @@ const flowOrder: SurveyRouteKey[] = [
 export function isParticipantComplete(session: SurveySession | null) {
   return (
     session !== null &&
+    session.privacyConsent?.agreed === true &&
     Object.keys(validateParticipant(session.participant)).length === 0
   );
 }

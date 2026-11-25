@@ -3,12 +3,12 @@
 import { useSyncExternalStore } from "react";
 import AppHeader from "@/components/AppHeader";
 import StepIndicator from "@/components/StepIndicator";
-import { infoText } from "@/constants/info";
+import { infoPrivacyConsent, infoText } from "@/constants/info";
 import {
   clearParticipant,
-  getParticipantServerSnapshot,
-  loadParticipant,
-  subscribeParticipant,
+  getSessionServerSnapshot,
+  loadSession,
+  subscribeSession,
 } from "@/lib/storage/surveySession";
 import InfoForm from "@/views/info/components/InfoForm";
 import type { Participant } from "@/types/survey";
@@ -23,12 +23,16 @@ const emptyParticipant: Participant = {
 
 export default function InfoScreen() {
   // 정적 HTML에서도 폼이 바로 렌더링되도록 서버 스냅샷은 빈 값으로 두고, 마운트 후에만 저장 값을 반영한다.
-  const savedParticipant = useSyncExternalStore(
-    subscribeParticipant,
-    loadParticipant,
-    getParticipantServerSnapshot,
+  const savedSession = useSyncExternalStore(
+    subscribeSession,
+    loadSession,
+    getSessionServerSnapshot,
   );
+  const savedParticipant = savedSession?.participant ?? null;
   const initialValues = savedParticipant ?? emptyParticipant;
+  const initialPrivacyAgreed =
+    savedSession?.privacyConsent?.agreed === true &&
+    savedSession.privacyConsent.textVersion === infoPrivacyConsent.textVersion;
   const formKey = savedParticipant ? "restored" : "empty";
 
   return (
@@ -56,7 +60,11 @@ export default function InfoScreen() {
             </button>
           </div>
         ) : null}
-        <InfoForm key={formKey} initialValues={initialValues} />
+        <InfoForm
+          key={formKey}
+          initialValues={initialValues}
+          initialPrivacyAgreed={initialPrivacyAgreed}
+        />
       </div>
     </main>
   );
