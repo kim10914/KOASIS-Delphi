@@ -1,8 +1,6 @@
-import { consentTextVersion } from "@/constants/consent";
 import { moodGridSize } from "@/constants/flow";
 import { genderOptions, regionOptions } from "@/constants/info";
 import type {
-  FaceConsent,
   ImageResponse,
   MoodCheck,
   MoodPhase,
@@ -130,15 +128,6 @@ function isParticipant(value: unknown): value is Participant {
   return participantFields.every((field) => typeof value[field] === "string");
 }
 
-function isFaceConsent(value: unknown): value is FaceConsent {
-  return (
-    isRecord(value) &&
-    typeof value.agreed === "boolean" &&
-    typeof value.at === "string" &&
-    typeof value.textVersion === "string"
-  );
-}
-
 function isNonNegativeNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
@@ -243,7 +232,6 @@ function parseSession(value: unknown): SurveySession | null {
     sessionId: value.sessionId,
     startedAt: value.startedAt,
     participant: sanitizeParticipant(value.participant),
-    faceConsent: isFaceConsent(value.faceConsent) ? value.faceConsent : null,
     preMood: isMoodCheck(value.preMood) ? value.preMood : null,
     imageOrder,
     responses,
@@ -351,7 +339,6 @@ export function saveParticipant(participant: Participant) {
     sessionId: createSessionId(),
     startedAt: new Date().toISOString(),
     participant: sanitized,
-    faceConsent: null,
     preMood: null,
     imageOrder: null,
     responses: [],
@@ -374,38 +361,6 @@ export function loadParticipant(): Participant | null {
     cachedParticipant = next;
   }
   return cachedParticipant;
-}
-
-// ---- 표정 분석 동의 ----
-
-export const subscribeFaceConsent = sessionStore.subscribe;
-
-export function getFaceConsentServerSnapshot(): FaceConsent | null {
-  return null;
-}
-
-export function saveFaceConsent(
-  agreed: boolean,
-  textVersion: string = consentTextVersion,
-): void {
-  updateSession((session) => ({
-    ...session,
-    faceConsent: { agreed, at: new Date().toISOString(), textVersion },
-  }));
-}
-
-let cachedFaceConsent: FaceConsent | null = null;
-
-export function loadFaceConsent(): FaceConsent | null {
-  const next = sessionStore.load()?.faceConsent ?? null;
-  if (JSON.stringify(next) !== JSON.stringify(cachedFaceConsent)) {
-    cachedFaceConsent = next;
-  }
-  return cachedFaceConsent;
-}
-
-export function clearFaceConsent(): void {
-  updateSession((session) => ({ ...session, faceConsent: null }));
 }
 
 // ---- 무드미터 ----

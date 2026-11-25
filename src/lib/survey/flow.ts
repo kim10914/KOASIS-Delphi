@@ -7,7 +7,6 @@ export type SurveyRouteKey = keyof typeof routes;
 // 화면 흐름 순서. 앞 단계의 필수 상태가 없으면 뒤 단계로 들어갈 수 없다.
 const flowOrder: SurveyRouteKey[] = [
   "info",
-  "consent",
   "moodPre",
   "ready",
   "test",
@@ -41,9 +40,6 @@ function reachableIndex(
   }
   if (!session || !isParticipantComplete(session)) {
     return flowOrder.indexOf("info");
-  }
-  if (!session.faceConsent) {
-    return flowOrder.indexOf("consent");
   }
   if (!session.preMood) {
     return flowOrder.indexOf("moodPre");

@@ -70,7 +70,7 @@ export default function InfoForm({ initialValues }: InfoFormProps) {
       name: values.name.trim(),
       job: values.job.trim(),
     });
-    router.push(routes.consent);
+    router.push(routes.moodPre);
   }
 
   return (
