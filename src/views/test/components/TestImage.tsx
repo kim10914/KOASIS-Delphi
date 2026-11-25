@@ -25,16 +25,28 @@ export default function TestImage({
 }: TestImageProps) {
   const [state, setState] = useState<LoadState>("loading");
   const [attempt, setAttempt] = useState(0);
-  const frameIdsRef = useRef<number[]>([]);
+  const onDisplayedRef = useRef(onDisplayed);
 
   useEffect(() => {
-    const frameIds = frameIdsRef.current;
+    onDisplayedRef.current = onDisplayed;
+  }, [onDisplayed]);
+
+  // StrictMode 재마운트에서도 누락되지 않도록 loaded 상태 진입 시 2프레임 뒤 표시 완료를 알린다.
+  useEffect(() => {
+    if (state !== "loaded") {
+      return;
+    }
+    let secondFrameId = 0;
+    const firstFrameId = requestAnimationFrame(() => {
+      secondFrameId = requestAnimationFrame(() => {
+        onDisplayedRef.current();
+      });
+    });
     return () => {
-      for (const id of frameIds) {
-        cancelAnimationFrame(id);
-      }
+      cancelAnimationFrame(firstFrameId);
+      cancelAnimationFrame(secondFrameId);
     };
-  }, []);
+  }, [state]);
 
   function handleRetry() {
     setState("loading");
@@ -43,11 +55,6 @@ export default function TestImage({
 
   function handleLoad() {
     setState("loaded");
-    // 페이드 없이, 로드 직후 두 프레임이 지나 실제로 그려진 뒤에 표시 완료로 본다.
-    const first = requestAnimationFrame(() => {
-      frameIdsRef.current.push(requestAnimationFrame(onDisplayed));
-    });
-    frameIdsRef.current.push(first);
   }
 
   const canRetry = attempt < imageMaxRetries;
