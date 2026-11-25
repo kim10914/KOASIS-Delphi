@@ -5,19 +5,19 @@
 
 create table public.mm_sessions (
   id uuid primary key,
-  owner_id uuid not null default auth.uid() references auth.users (id),
+  owner_id uuid default auth.uid() references auth.users (id) on delete set null,
   created_at timestamptz not null default now(),
   started_at timestamptz not null,
   completed_at timestamptz not null,
   ui_type text not null,
-  image_count integer not null check (image_count >= 0),
-  participant_name text not null,
-  birth_date text not null,
-  gender text not null,
-  job text not null,
-  region text not null,
+  image_count integer not null check (image_count between 0 and 100),
+  participant_name text not null check (char_length(btrim(participant_name)) between 1 and 20),
+  birth_date text not null check (birth_date ~ '^[0-9]{8}$'),
+  gender text not null check (char_length(btrim(gender)) between 1 and 30),
+  job text not null check (char_length(btrim(job)) between 1 and 50),
+  region text not null check (char_length(btrim(region)) between 1 and 50),
   consent_at timestamptz not null,
-  consent_text_version text not null
+  consent_text_version text not null check (char_length(btrim(consent_text_version)) between 1 and 50)
 );
 
 create table public.mm_mood_checks (
@@ -36,11 +36,11 @@ create table public.mm_image_responses (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references public.mm_sessions (id),
   image_id text not null,
-  order_index integer not null check (order_index >= 0),
+  order_index integer not null check (order_index between 0 and 99),
   valence smallint check (valence between 1 and 7),
   arousal smallint check (arousal between 1 and 7),
   skipped boolean not null default false,
-  response_ms integer not null check (response_ms >= 0),
+  response_ms integer not null check (response_ms between 0 and 3600000),
   responded_at timestamptz not null,
   unique (session_id, order_index),
   check (

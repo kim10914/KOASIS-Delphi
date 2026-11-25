@@ -9,7 +9,7 @@ import { clearResult, clearSession } from "@/lib/storage/surveySession";
 import { submitSurvey } from "@/lib/survey/submitSurvey";
 import FlowNotice from "@/views/flow/components/FlowNotice";
 
-type SaveStatus = "saving" | "network-error" | "invalid";
+type SaveStatus = "saving" | "network-error" | "rejected" | "invalid";
 
 /**
  * 사후 응답 제출 뒤 최종 저장을 진행한다.
@@ -64,6 +64,20 @@ export default function SaveScreen() {
         description={saveText.failedDescription}
       >
         <Button onClick={save}>{saveText.retryLabel}</Button>
+      </FlowNotice>
+    );
+  }
+
+  if (status === "rejected") {
+    return (
+      <FlowNotice
+        key="rejected"
+        role="alert"
+        focusOnMount
+        title={saveText.rejectedTitle}
+        description={saveText.rejectedDescription}
+      >
+        <Button onClick={handleRestart}>{saveText.restartLabel}</Button>
       </FlowNotice>
     );
   }

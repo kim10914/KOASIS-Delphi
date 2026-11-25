@@ -239,7 +239,9 @@ function parseSession(value: unknown): SurveySession | null {
     return null;
   }
   return {
-    sessionId: value.sessionId,
+    sessionId: uuidPattern.test(value.sessionId)
+      ? value.sessionId
+      : createSessionId(),
     startedAt: value.startedAt,
     participant: sanitizeParticipant(value.participant),
     privacyConsent: isPrivacyConsent(value.privacyConsent)
@@ -279,11 +281,23 @@ const resultStore = createSessionStore<SurveyResultSummary>(
   parseResult,
 );
 
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 function createSessionId() {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return crypto.randomUUID();
   }
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join(
+    "",
+  );
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
 // 진행 중인 세션이 있을 때만 변경을 적용한다. 세션이 없으면 아무것도 하지 않는다.

@@ -30,6 +30,9 @@ export const saveText = {
   invalidTitle: "저장할 응답을 찾지 못했어요.",
   invalidDescription:
     "진행 정보가 비어 있어 저장할 수 없어요.\n처음부터 다시 진행해 주세요.",
+  rejectedTitle: "응답을 저장할 수 없어요.",
+  rejectedDescription:
+    "응답 형식이나 권한 확인에 실패했어요.\n처음부터 다시 진행해 주세요.",
   retryLabel: "다시 시도",
   savedTitle: "조사가 모두 완료되었어요.",
   savedDescription: "응답이 저장되었어요.\n참여해 주셔서 감사합니다.",
