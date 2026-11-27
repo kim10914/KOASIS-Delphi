@@ -39,6 +39,8 @@
   --color-error: var(--color-error);
   --color-splash-bg: var(--color-splash-bg);
   --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+  --font-brand:
+    var(--font-outfit), "Pretendard Variable", Pretendard, system-ui, sans-serif;
 }
 
 /* 모션: 전환 시간 토큰 및 등장 키프레임 (150~200ms) */
