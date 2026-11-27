@@ -14,10 +14,11 @@ export default function StepIndicator({
     <ol className="flex items-center" aria-label={stepIndicatorText.label}>
       {steps.map((step) => {
         const reached = step <= currentStep;
+        const isCurrent = step === currentStep;
         return (
           <li
             key={step}
-            aria-current={step === currentStep ? "step" : undefined}
+            aria-current={isCurrent ? "step" : undefined}
             className="flex items-center"
           >
             {step > 1 ? (
@@ -26,6 +27,8 @@ export default function StepIndicator({
             <span
               aria-hidden="true"
               className={`flex size-8.5 items-center justify-center rounded-full border text-sm font-semibold ${
+                isCurrent ? "animate-step-in motion-reduce:animate-none" : ""
+              } ${
                 reached
                   ? "border-text-strong bg-text-strong text-white"
                   : "border-border bg-surface text-text-muted"

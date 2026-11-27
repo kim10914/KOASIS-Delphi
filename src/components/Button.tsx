@@ -9,7 +9,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const buttonBaseClassName =
-  "flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] text-base font-semibold";
+  "flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] text-base font-semibold transition-[color,background-color,border-color,box-shadow,scale] duration-[var(--duration-fast)] ease-out not-disabled:active:scale-[0.98] motion-reduce:not-disabled:active:scale-100";
 
 export const primaryButtonClassName = `${buttonBaseClassName} bg-primary text-white`;
 

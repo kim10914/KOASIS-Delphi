@@ -40,3 +40,38 @@
   --color-splash-bg: var(--color-splash-bg);
   --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
 }
+
+/* 모션: 전환 시간 토큰 및 등장 키프레임 (150~200ms) */
+:root {
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+}
+
+@theme {
+  --animate-message-in: message-in var(--duration-normal) ease-out;
+  --animate-step-in: step-in var(--duration-normal) ease-out;
+
+  @keyframes message-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes step-in {
+    from {
+      opacity: 0.7;
+      transform: scale(0.88);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
