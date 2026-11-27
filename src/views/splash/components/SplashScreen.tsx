@@ -12,7 +12,6 @@ import SplashIntro from "./SplashIntro";
 
 export default function SplashScreen() {
   const [step, setStep] = useState<SplashStep>(splashSteps.logo);
-  const [isPromptDismissed, setIsPromptDismissed] = useState(false);
   const pwaInstall = usePwaInstall();
 
   useEffect(() => {
@@ -36,8 +35,7 @@ export default function SplashScreen() {
 
   const isIntro = step === splashSteps.intro;
   const showMeta = step !== splashSteps.logo;
-  const showInstallPrompt =
-    isIntro && pwaInstall.canPrompt && !isPromptDismissed;
+  const showInstallPrompt = isIntro && pwaInstall.canPrompt;
 
   return (
     <main className="pageContainer bg-splash-bg! relative overflow-hidden pt-[env(safe-area-inset-top)]">
@@ -77,7 +75,7 @@ export default function SplashScreen() {
         isIosDevice={pwaInstall.isIosDevice}
         hasNativePrompt={pwaInstall.hasNativePrompt}
         onInstall={pwaInstall.promptInstall}
-        onClose={() => setIsPromptDismissed(true)}
+        onClose={pwaInstall.dismissPrompt}
       />
     </main>
   );

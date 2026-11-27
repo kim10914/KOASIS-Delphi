@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 
 type ModalProps = {
   open: boolean;
@@ -10,46 +16,56 @@ type ModalProps = {
 };
 
 /**
- * 하단 시트형 공통 모달. 최대 폭 430px, 배경 클릭·Esc로 닫는다.
+ * 하단 시트형 공통 모달. 네이티브 dialog(showModal)로 포커스 트랩·Esc·배경 비활성을 처리한다.
  */
 export default function Modal({ open, title, onClose, children }: ModalProps) {
   const titleId = useId();
-  const panelRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const onCloseRef = useRef(onClose);
 
   useEffect(() => {
-    if (!open) {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) {
       return;
     }
-    panelRef.current?.focus();
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
+    if (open) {
+      if (!dialog.open) {
+        dialog.showModal();
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+      return;
+    }
+    if (dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
 
-  if (!open) {
-    return null;
-  }
+  const handleBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
+    if (event.target === dialogRef.current) {
+      onCloseRef.current();
+    }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
-      <div aria-hidden="true" className="absolute inset-0" onClick={onClose} />
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        className="bg-surface text-text-strong relative w-full max-w-[430px] rounded-t-[var(--radius-card)] px-5 pt-7 pb-[max(24px,env(safe-area-inset-bottom))] shadow-[var(--shadow-card)] outline-none"
-      >
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      onCancel={(event) => {
+        event.preventDefault();
+        onCloseRef.current();
+      }}
+      onClick={handleBackdropClick}
+      className="bg-surface text-text-strong fixed inset-0 mx-auto mt-auto mb-0 w-full max-w-[430px] rounded-t-[var(--radius-card)] border-0 p-0 shadow-[var(--shadow-card)] outline-none backdrop:bg-black/50"
+    >
+      <div className="px-5 pt-7 pb-[max(24px,env(safe-area-inset-bottom))]">
         <h2 id={titleId} className="text-xl leading-snug font-semibold">
           {title}
         </h2>
         {children}
       </div>
-    </div>
+    </dialog>
   );
 }

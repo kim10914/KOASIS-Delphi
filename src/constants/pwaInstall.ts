@@ -1,6 +1,7 @@
 export const pwaInstallText = {
   title: "앱으로 설치하고 더 편하게 이용하세요",
-  description: "홈 화면에 추가하면 앱처럼 바로 열 수 있어요.",
+  description:
+    "홈 화면에 추가하면 앱처럼 바로 열 수 있어요. 이미 설치했다면 홈 화면 아이콘으로 열어 주세요.",
   installLabel: "설치하기",
   dismissLabel: "웹으로 이용할게요",
   confirmLabel: "확인했어요",
@@ -19,6 +20,7 @@ export const pwaInstallText = {
 export const pwaConfig = {
   serviceWorkerPath: "/sw.js",
   serviceWorkerScope: "/",
+  dismissedSessionKey: "mind-mirror:pwa-prompt-dismissed",
   mobileUserAgentPattern: /Android|iPhone|iPad|iPod|Mobile/i,
   iosUserAgentPattern: /iPhone|iPad|iPod/i,
   standaloneMediaQuery: "(display-mode: standalone)",
