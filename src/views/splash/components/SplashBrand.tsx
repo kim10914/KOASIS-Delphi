@@ -17,7 +17,7 @@ export default function SplashBrand({ showSubtitle }: SplashBrandProps) {
         className="h-auto w-[74px]"
         preload
       />
-      <p className="mt-2.5 font-brand text-[32px] leading-tight font-semibold tracking-tight">
+      <p className="mt-2.5 font-brand text-[40px] leading-tight font-semibold tracking-tight">
         {splashText.brandName}
       </p>
       <p
