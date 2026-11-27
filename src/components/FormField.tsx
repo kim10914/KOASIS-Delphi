@@ -9,6 +9,9 @@ type FormFieldProps = {
   children: ReactNode;
 };
 
+const messageClassName =
+  "animate-message-in text-sm motion-reduce:animate-none";
+
 /**
  * Input, Select 등 폼 컨트롤의 라벨과 오류·안내 문구 마크업을 공통으로 제공한다.
  */
@@ -31,11 +34,20 @@ export default function FormField({
       {children}
       {message ? (
         hasError ? (
-          <p id={messageId} role="alert" className="text-sm text-error">
+          <p
+            key="error"
+            id={messageId}
+            role="alert"
+            className={`${messageClassName} text-error`}
+          >
             {message}
           </p>
         ) : (
-          <p id={messageId} className="text-sm text-text-muted">
+          <p
+            key="helper"
+            id={messageId}
+            className={`${messageClassName} text-text-muted`}
+          >
             {message}
           </p>
         )

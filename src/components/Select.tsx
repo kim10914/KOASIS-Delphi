@@ -67,12 +67,12 @@ export default function Select({
       <div className="relative">
         <select
           id={selectId}
-          className={`h-14 w-full appearance-none rounded-[var(--radius-input)] border bg-surface pr-12 pl-5 text-base outline-none disabled:bg-surface-muted ${
+          className={`h-14 w-full appearance-none rounded-[var(--radius-input)] border bg-surface pr-12 pl-5 text-base outline-none transition-[border-color,box-shadow,background-color,color] duration-[var(--duration-fast)] ease-out focus:ring-1 disabled:bg-surface-muted ${
             showPlaceholderColor ? "text-text-muted" : "text-text-strong"
           } ${
             error
-              ? "border-error focus:border-error"
-              : "border-border focus:border-text-strong"
+              ? "border-error ring-error focus:border-error"
+              : "border-border ring-text-strong focus:border-text-strong"
           } ${className}`}
           {...valueProps}
           {...props}

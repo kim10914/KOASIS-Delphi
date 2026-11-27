@@ -14,10 +14,7 @@ export default function SplashIntro() {
         ))}
       </h1>
       <p className="mt-3 text-base">{splashText.introDescription}</p>
-      <Link
-        href={routes.info}
-        className={`${primaryButtonClassName} mt-8 transition-transform duration-150 active:scale-[0.98]`}
-      >
+      <Link href={routes.info} className={`${primaryButtonClassName} mt-8`}>
         {splashText.startLabel}
       </Link>
     </div>
