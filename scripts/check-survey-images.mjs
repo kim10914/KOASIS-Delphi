@@ -1,24 +1,49 @@
 // 이미지 라벨 목록과 이미지 폴더를 대조해 검증한다. (#36 이미지·라벨 확정 시 사용)
 // 사용법: node scripts/check-survey-images.mjs [라벨파일] [이미지폴더] [세션당이미지수]
-//   라벨파일: JSON([{ "id": "...", "quadrant": "..." }]) 또는 CSV(헤더 id,quadrant)
-//   기본값: scripts/survey-image-labels.json, public/survey-images, 20
+//   라벨파일: JSON([{ "id": "...", "file"?: "...", "quadrant": "..." }]) 또는 CSV(헤더 id,quadrant[,file])
+//   기본값: src/constants/surveyImages.json, public/survey-images, src/config/survey.json의 imageCount
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { extname, basename, resolve } from "node:path";
+import { extname, resolve } from "node:path";
 
-// src/constants/images.ts의 imageQuadrants와 같은 값을 유지한다.
-const quadrants = [
-  "highEnergyPositive",
-  "highEnergyNegative",
-  "lowEnergyPositive",
-  "lowEnergyNegative",
-];
+const configPath = resolve("src/config/survey.json");
+const surveyConfig = JSON.parse(readFileSync(configPath, "utf8"));
+const quadrants = surveyConfig.quadrants;
+const defaultExtension = "jpg";
 const imageExtensions = [".jpg", ".jpeg", ".png", ".webp", ".avif"];
 
-const labelPath = resolve(process.argv[2] ?? "scripts/survey-image-labels.json");
+// 수령한 라벨 표기를 앱 내부 사분면 이름으로 정규화한다. (점수 기반 임의 분류는 허용하지 않는다)
+const quadrantAliases = {
+  highEnergyPositive: "highEnergyPositive",
+  "고각성·쾌": "highEnergyPositive",
+  "고각성-쾌": "highEnergyPositive",
+  HAP: "highEnergyPositive",
+  highEnergyNegative: "highEnergyNegative",
+  "고각성·불쾌": "highEnergyNegative",
+  "고각성-불쾌": "highEnergyNegative",
+  HAN: "highEnergyNegative",
+  lowEnergyPositive: "lowEnergyPositive",
+  "저각성·쾌": "lowEnergyPositive",
+  "저각성-쾌": "lowEnergyPositive",
+  LAP: "lowEnergyPositive",
+  lowEnergyNegative: "lowEnergyNegative",
+  "저각성·불쾌": "lowEnergyNegative",
+  "저각성-불쾌": "lowEnergyNegative",
+  LAN: "lowEnergyNegative",
+};
+
+const labelPath = resolve(process.argv[2] ?? "src/constants/surveyImages.json");
 const imageDir = resolve(process.argv[3] ?? "public/survey-images");
-const imageCount = Number(process.argv[4] ?? 20);
+const imageCount = Number(process.argv[4] ?? surveyConfig.imageCount);
 
 const errors = [];
+
+function normalizeQuadrant(raw) {
+  if (typeof raw !== "string") {
+    return null;
+  }
+  const key = raw.trim();
+  return quadrantAliases[key] ?? null;
+}
 
 function parseCsvLine(line) {
   const cells = [];
@@ -61,9 +86,7 @@ function parseLabels(path) {
     const [header, ...rows] = lines;
     const columns = parseCsvLine(header);
     if (!columns.includes("id") || !columns.includes("quadrant")) {
-      throw new Error(
-        "CSV 헤더에 id와 quadrant 컬럼이 필요합니다.",
-      );
+      throw new Error("CSV 헤더에 id와 quadrant 컬럼이 필요합니다.");
     }
     return rows.map((row) => {
       const cells = parseCsvLine(row);
@@ -85,8 +108,14 @@ if (!existsSync(imageDir)) {
   console.error(`이미지 폴더를 찾을 수 없습니다: ${imageDir}`);
   process.exit(1);
 }
-if (!Number.isInteger(imageCount) || imageCount <= 0 || imageCount % 4 !== 0) {
-  console.error(`세션당 이미지 수는 4의 배수인 양의 정수여야 합니다: ${imageCount}`);
+if (
+  !Number.isInteger(imageCount) ||
+  imageCount <= 0 ||
+  imageCount % quadrants.length !== 0
+) {
+  console.error(
+    `세션당 이미지 수는 ${quadrants.length}의 배수인 양의 정수여야 합니다: ${imageCount}`,
+  );
   process.exit(1);
 }
 
@@ -105,42 +134,47 @@ const files = readdirSync(imageDir, { withFileTypes: true })
       imageExtensions.includes(extname(entry.name).toLowerCase()),
   )
   .map((entry) => entry.name);
-const fileIds = new Map();
-for (const name of files) {
-  const id = basename(name, extname(name));
-  if (fileIds.has(id)) {
-    errors.push(`이미지 파일 ID 중복: ${id} (${fileIds.get(id)}, ${name})`);
-  }
-  fileIds.set(id, name);
-}
+const fileSet = new Set(files);
 
-const seen = new Set();
+const seenIds = new Set();
+const matchedFiles = new Set();
 const counts = Object.fromEntries(quadrants.map((quadrant) => [quadrant, 0]));
+
 labels.forEach((item, index) => {
   const id = typeof item?.id === "string" ? item.id.trim() : "";
   if (!id) {
     errors.push(`#${index + 1}: id가 비어 있습니다.`);
     return;
   }
-  if (seen.has(id)) {
+  if (seenIds.has(id)) {
     errors.push(`중복 ID: ${id}`);
     return;
   }
-  seen.add(id);
-  if (!quadrants.includes(item.quadrant)) {
+  seenIds.add(id);
+
+  const normalized = normalizeQuadrant(item.quadrant);
+  if (!normalized) {
     errors.push(
       `${id}: 사분면 라벨이 올바르지 않습니다. (${item.quadrant ?? "없음"}) 허용값: ${quadrants.join(", ")}`,
     );
   } else {
-    counts[item.quadrant] += 1;
+    counts[normalized] += 1;
   }
-  if (!fileIds.has(id)) {
-    errors.push(`${id}: 이미지 파일이 없습니다. (${imageDir})`);
+
+  // getImageSrc와 동일한 파일명 규칙(item.file 우선, 없으면 <id>.jpg)으로 실제 파일을 찾는다.
+  const expectedFile =
+    typeof item?.file === "string" && item.file.trim()
+      ? item.file.trim()
+      : `${id}.${defaultExtension}`;
+  if (!fileSet.has(expectedFile)) {
+    errors.push(`${id}: 이미지 파일이 없습니다. (기대 파일명: ${expectedFile})`);
+  } else {
+    matchedFiles.add(expectedFile);
   }
 });
 
-for (const [id, name] of fileIds) {
-  if (!seen.has(id)) {
+for (const name of files) {
+  if (!matchedFiles.has(name)) {
     errors.push(`${name}: 라벨이 없는 이미지 파일입니다.`);
   }
 }

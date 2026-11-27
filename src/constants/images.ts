@@ -1,31 +1,26 @@
+import surveyConfigJson from "@/config/survey.json";
+import rawSurveyImages from "@/constants/surveyImages.json";
 import type { ImageQuadrant, SurveyImageItem } from "@/types/survey";
 
-// 사분면 목록. 이미지 라벨과 균등 추출이 이 순서와 이름을 기준으로 한다.
-// scripts/check-survey-images.mjs의 quadrants와 같은 값을 유지한다.
-export const imageQuadrants: readonly ImageQuadrant[] = [
-  "highEnergyPositive",
-  "highEnergyNegative",
-  "lowEnergyPositive",
-  "lowEnergyNegative",
-];
+// 사분면 목록. src/config/survey.json에서 읽어 검사 스크립트와 같은 기준을 공유한다.
+export const imageQuadrants: readonly ImageQuadrant[] =
+  surveyConfigJson.quadrants as readonly ImageQuadrant[];
 
-// 실제 이미지 파일 위치와 확장자. 최종 이미지 파일이 확정되면 여기만 맞춘다.
+// 실제 이미지 파일 위치와 기본 확장자. item.file이 없을 때 <id>.<기본확장자>로 매핑한다.
 export const surveyImageDir = "/survey-images";
 export const surveyImageExtension = "jpg";
 
 // 임시 이미지 ID 접두사. 이 접두사의 ID는 파일 없이 SVG 데이터 URL로 표시한다.
 const placeholderPrefix = "placeholder-";
 
-// K-OASIS 이미지 정보 중 임시 이미지 40장. 실제 파일명(원본 OASIS와 동일)과 사분면 라벨이 확정되면 교체한다.
-// 지금은 사분면 4곳에 10장씩 번갈아 배정한 가짜 라벨이다.
-export const imagePoolSize = 40;
+// K-OASIS 이미지 풀. 앱과 검사 스크립트가 동일한 src/constants/surveyImages.json을 사용한다.
+export const imagePool: readonly SurveyImageItem[] =
+  rawSurveyImages as readonly SurveyImageItem[];
 
-export const imagePool: readonly SurveyImageItem[] = Array.from(
-  { length: imagePoolSize },
-  (_, index) => ({
-    id: `${placeholderPrefix}${String(index + 1).padStart(3, "0")}`,
-    quadrant: imageQuadrants[index % imageQuadrants.length],
-  }),
+export const imagePoolSize = imagePool.length;
+
+const imageMap = new Map<string, SurveyImageItem>(
+  imagePool.map((item) => [item.id, item]),
 );
 
 function getPlaceholderSrc(imageId: string): string {
@@ -38,10 +33,12 @@ function getPlaceholderSrc(imageId: string): string {
 }
 
 // 이미지 ID를 화면에 표시할 주소로 바꾼다.
-// placeholder-* ID는 파일 없이 SVG로, 실제 ID는 /survey-images/<id>.<확장자>로 매핑한다.
+// placeholder-* ID는 SVG로, 실제 ID는 item.file(또는 <id>.jpg)을 /survey-images/ 아래에 매핑한다.
 export function getImageSrc(imageId: string): string {
   if (imageId.startsWith(placeholderPrefix)) {
     return getPlaceholderSrc(imageId);
   }
-  return `${surveyImageDir}/${encodeURIComponent(imageId)}.${surveyImageExtension}`;
+  const fileName =
+    imageMap.get(imageId)?.file ?? `${imageId}.${surveyImageExtension}`;
+  return `${surveyImageDir}/${encodeURIComponent(fileName)}`;
 }

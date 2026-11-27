@@ -40,9 +40,10 @@ export type ImageQuadrant = MoodQuadrant;
 // 이미지 선택 방식. random: 전체 무작위, balanced: 사분면별 균등 추출
 export type ImageSelection = "random" | "balanced";
 
-// 이미지 목록의 한 항목. id는 public/survey-images/<id>.<확장자> 파일명과 같다.
+// 이미지 목록의 한 항목. file이 있으면 public/survey-images/<file>, 없으면 <id>.jpg를 사용한다.
 export type SurveyImageItem = {
   id: string;
+  file?: string;
   quadrant: ImageQuadrant;
 };
 
