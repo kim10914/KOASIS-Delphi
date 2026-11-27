@@ -5,10 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "prebuild": "npm run check:config",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "check:config": "node scripts/check-survey-config.mjs",
+    "check:images": "node scripts/check-survey-images.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.2",

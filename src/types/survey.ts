@@ -34,6 +34,19 @@ export type MoodQuadrant =
   | "lowEnergyNegative"
   | "lowEnergyPositive";
 
+// 이미지 사분면: 쾌·불쾌(valence) × 각성 고·저(arousal). 무드미터 사분면(MoodQuadrant)과 같은 이름을 쓴다.
+export type ImageQuadrant = MoodQuadrant;
+
+// 이미지 선택 방식. random: 전체 무작위, balanced: 사분면별 균등 추출
+export type ImageSelection = "random" | "balanced";
+
+// 이미지 목록의 한 항목. file이 있으면 public/survey-images/<file>, 없으면 <id>.jpg를 사용한다.
+export type SurveyImageItem = {
+  id: string;
+  file?: string;
+  quadrant: ImageQuadrant;
+};
+
 export type MoodMeter = {
   quadrant: MoodQuadrant;
   emotion: string;

@@ -1,0 +1,12 @@
+{
+  "imageCount": 20,
+  "imageSelection": "balanced",
+  "testUiType": "type2",
+  "scaleSteps": 7,
+  "quadrants": [
+    "highEnergyPositive",
+    "highEnergyNegative",
+    "lowEnergyPositive",
+    "lowEnergyNegative"
+  ]
+}
