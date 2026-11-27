@@ -54,7 +54,7 @@ Figma 원본이 없어 시안 PNG(563px 폭)에서 색상을 샘플링했다. �
 - 입력창·셀렉트 모서리 반경 12px (`--radius-input`)
 - 카드 모서리 반경 약 24px (`--radius-card`)
 - 화면 좌우 여백 20px
-- 폰트: Pretendard (한글), 로고 영문 워드마크는 Outfit (`next/font/google`, `--font-brand` / `font-brand` 유틸리티, semibold). SVG 로고 원본은 미제공이라 PNG 유지
+- 폰트: Pretendard (한글), 로고 영문 워드마크는 Outfit (`next/font/google`, `--font-brand` / `font-brand` 유틸리티, semibold). 로고는 시안 PNG에서 역추출한 SVG 사용(원본 아님)
 
 ## 에셋 (`docs/assets/`)
 
