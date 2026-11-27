@@ -36,10 +36,10 @@ export default function Input({
     >
       <input
         id={inputId}
-        className={`h-14 w-full rounded-[var(--radius-input)] border bg-surface px-5 text-base text-text-strong outline-none placeholder:text-text-muted disabled:bg-surface-muted ${
+        className={`h-14 w-full rounded-[var(--radius-input)] border bg-surface px-5 text-base text-text-strong outline-none transition-[border-color,box-shadow,background-color] duration-200 ease-out placeholder:text-text-muted focus:ring-1 disabled:bg-surface-muted motion-reduce:transition-none ${
           error
-            ? "border-error focus:border-error"
-            : "border-border focus:border-text-strong"
+            ? "border-error ring-error focus:border-error"
+            : "border-border ring-text-strong focus:border-text-strong"
         } ${className}`}
         {...props}
         aria-invalid={error ? true : undefined}

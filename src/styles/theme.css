@@ -40,3 +40,20 @@
   --color-splash-bg: var(--color-splash-bg);
   --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
 }
+
+/* 모션: 안내·오류 문구 등장 (150~200ms) */
+@theme {
+  --animate-message-in: message-in 200ms ease-out;
+
+  @keyframes message-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
