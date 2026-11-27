@@ -3,13 +3,17 @@
 import { useEffect, useState } from "react";
 import { splashConfig } from "@/config/survey";
 import { splashSteps, splashText, type SplashStep } from "@/constants/splash";
+import { usePwaInstall } from "@/lib/pwa/usePwaInstall";
 import { clearParticipant, clearResult } from "@/lib/storage/surveySession";
 import SplashBackground from "./SplashBackground";
 import SplashBrand from "./SplashBrand";
+import PwaInstallPrompt from "./PwaInstallPrompt";
 import SplashIntro from "./SplashIntro";
 
 export default function SplashScreen() {
   const [step, setStep] = useState<SplashStep>(splashSteps.logo);
+  const [isPromptDismissed, setIsPromptDismissed] = useState(false);
+  const pwaInstall = usePwaInstall();
 
   useEffect(() => {
     clearParticipant();
@@ -32,6 +36,8 @@ export default function SplashScreen() {
 
   const isIntro = step === splashSteps.intro;
   const showMeta = step !== splashSteps.logo;
+  const showInstallPrompt =
+    isIntro && pwaInstall.canPrompt && !isPromptDismissed;
 
   return (
     <main className="pageContainer bg-splash-bg! relative overflow-hidden pt-[env(safe-area-inset-top)]">
@@ -66,6 +72,13 @@ export default function SplashScreen() {
       >
         {splashText.copyright}
       </p>
+      <PwaInstallPrompt
+        open={showInstallPrompt}
+        isIosDevice={pwaInstall.isIosDevice}
+        hasNativePrompt={pwaInstall.hasNativePrompt}
+        onInstall={pwaInstall.promptInstall}
+        onClose={() => setIsPromptDismissed(true)}
+      />
     </main>
   );
 }
