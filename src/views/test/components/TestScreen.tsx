@@ -47,13 +47,13 @@ export default function TestScreen() {
   return (
     <div className="min-h-dvh bg-surface-muted">
       <main className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3">
-        <div className="rounded-b-3xl bg-surface px-5">
+        <div className="rounded-b-3xl bg-surface pagePaddingX pt-[env(safe-area-inset-top)]">
           <AppHeader />
           <div className="pt-3">
             <TestProgress percent={percent} />
           </div>
         </div>
-        <div className="flex-1 rounded-t-3xl bg-surface px-5 pt-6 pb-[env(safe-area-inset-bottom)]">
+        <div className="flex-1 rounded-t-3xl bg-surface pagePaddingX pt-6 pb-[env(safe-area-inset-bottom)]">
           {currentImageId ? (
             <TestQuestion
               key={currentImageId}

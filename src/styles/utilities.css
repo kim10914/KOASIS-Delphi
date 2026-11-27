@@ -1,3 +1,9 @@
+/* 모바일 좌우 안전 여백 (노치·가로 모드 대응) */
+@utility pagePaddingX {
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+}
+
 /* 모바일 퍼스트 화면 컨테이너 */
 @utility pageContainer {
   margin-inline: auto;
@@ -7,6 +13,7 @@
   max-width: 430px;
   flex-direction: column;
   background: var(--color-surface);
-  padding-inline: 20px;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
   padding-bottom: env(safe-area-inset-bottom);
 }
