@@ -6,6 +6,7 @@
 
   body {
     margin: 0;
+    overflow-x: clip;
     background: var(--color-surface-muted);
     color: var(--color-text-strong);
     font-family: var(--font-sans);

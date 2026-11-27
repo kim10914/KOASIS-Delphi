@@ -47,7 +47,7 @@ export default function TestScreen() {
   return (
     <div className="min-h-dvh bg-surface-muted">
       <main className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3">
-        <div className="rounded-b-3xl bg-surface px-5">
+        <div className="rounded-b-3xl bg-surface px-5 pt-[env(safe-area-inset-top)]">
           <AppHeader />
           <div className="pt-3">
             <TestProgress percent={percent} />
