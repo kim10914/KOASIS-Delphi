@@ -36,7 +36,7 @@ export default function Input({
     >
       <input
         id={inputId}
-        className={`h-14 w-full rounded-[var(--radius-input)] border bg-surface px-5 text-base text-text-strong outline-none transition-[border-color,box-shadow,background-color] duration-200 ease-out placeholder:text-text-muted focus:ring-1 disabled:bg-surface-muted motion-reduce:transition-none ${
+        className={`h-14 w-full rounded-[var(--radius-input)] border bg-surface px-5 text-base text-text-strong outline-none transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)] ease-out placeholder:text-text-muted focus:ring-1 disabled:bg-surface-muted ${
           error
             ? "border-error ring-error focus:border-error"
             : "border-border ring-text-strong focus:border-text-strong"

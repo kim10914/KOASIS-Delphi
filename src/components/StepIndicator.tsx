@@ -14,23 +14,21 @@ export default function StepIndicator({
     <ol className="flex items-center" aria-label={stepIndicatorText.label}>
       {steps.map((step) => {
         const reached = step <= currentStep;
+        const isCurrent = step === currentStep;
         return (
           <li
             key={step}
-            aria-current={step === currentStep ? "step" : undefined}
+            aria-current={isCurrent ? "step" : undefined}
             className="flex items-center"
           >
             {step > 1 ? (
-              <span
-                className={`mx-1.5 h-px w-5 transition-colors duration-200 ease-out motion-reduce:transition-none ${
-                  reached ? "bg-text-strong" : "bg-border"
-                }`}
-                aria-hidden="true"
-              />
+              <span className="mx-1.5 h-px w-5 bg-border" aria-hidden="true" />
             ) : null}
             <span
               aria-hidden="true"
-              className={`flex size-8.5 items-center justify-center rounded-full border text-sm font-semibold transition-colors duration-200 ease-out motion-reduce:transition-none ${
+              className={`flex size-8.5 items-center justify-center rounded-full border text-sm font-semibold ${
+                isCurrent ? "animate-step-in motion-reduce:animate-none" : ""
+              } ${
                 reached
                   ? "border-text-strong bg-text-strong text-white"
                   : "border-border bg-surface text-text-muted"
