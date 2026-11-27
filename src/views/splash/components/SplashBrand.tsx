@@ -17,12 +17,12 @@ export default function SplashBrand({ showSubtitle }: SplashBrandProps) {
         className="h-auto w-[74px]"
         preload
       />
-      <p className="mt-2.5 text-[32px] leading-tight font-bold tracking-tight">
+      <p className="mt-2.5 font-brand text-[32px] leading-tight font-semibold tracking-tight">
         {splashText.brandName}
       </p>
       <p
         aria-hidden={!showSubtitle}
-        className={`mt-1.5 text-sm text-white/80 transition-all duration-500 ease-out motion-reduce:transition-none ${
+        className={`mt-1.5 font-brand text-sm text-white/80 transition-all duration-500 ease-out motion-reduce:transition-none ${
           showSubtitle ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
         }`}
       >

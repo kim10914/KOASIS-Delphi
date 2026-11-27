@@ -1,5 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { Outfit } from "next/font/google";
 import "@/styles/index.css";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: "variable",
+  variable: "--font-outfit",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Mind Mirror",
@@ -20,7 +28,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={outfit.variable}>
       <body>{children}</body>
     </html>
   );

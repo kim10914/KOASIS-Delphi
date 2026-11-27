@@ -12,7 +12,7 @@ export default function AppHeader() {
           height={19}
           preload
         />
-        <span className="text-xl font-bold text-text-strong">
+        <span className="font-brand text-xl font-semibold tracking-tight text-text-strong">
           {appHeaderText.wordmark}
         </span>
       </div>
